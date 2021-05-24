@@ -22,4 +22,12 @@ public class UserProcessor {
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
         return mongoTemplate.findOne(query, User.class);
     }
+
+    /** 向数据库中添加用户 */
+    public User addUser(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        return mongoTemplate.insert(user);
+    }
 }

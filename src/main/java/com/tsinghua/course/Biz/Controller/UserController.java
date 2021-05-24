@@ -7,6 +7,7 @@ import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.In.LoginInParams;
+import com.tsinghua.course.Biz.Controller.Params.UserParams.In.RegisterInParams;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
 import com.tsinghua.course.Frame.Util.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,5 +47,22 @@ public class UserController {
         return new CommonOutParams(true);
     }
 
+    /** 用户注册业务 */
+    @BizType(BizTypeEnum.USER_REGISTER)
+    public CommonOutParams userRegister(RegisterInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String password = inParams.getPassword();
+        if (username == null || password == null)
+            throw new CourseWarn(UserWarnEnum.REGISTER_LACK);
+        User user = userProcessor.getUserByUsername(username);
+        if (user != null)
+            throw new CourseWarn(UserWarnEnum.REGISTER_DUPLICATION);
 
+        /** 记录注册信息 */
+        if (userProcessor.addUser(username, password) == null)
+            /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.REGISTER_FAILED);
+
+        return new CommonOutParams(true);
+    }
 }

@@ -10,6 +10,7 @@ import com.tsinghua.course.Biz.Controller.UserController;
 public enum BizTypeEnum {
     /** 以下为用户业务类型 */
     USER_LOGIN(UserController.class, "/user/login", "用户登录"),
+    USER_REGISTER(UserController.class, "/user/register", "用户注册"),
 
     /** 定时任务业务测试 */
     LOG_TEST(TimerController.class, null, "定时日志测试"),

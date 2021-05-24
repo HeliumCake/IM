@@ -65,7 +65,8 @@ public class Dispatcher {
                 throw new CourseError(SystemErrorEnum.PARAMS_ERROR);
 
             /** 获取用户并存在线程中，可以让以后的操作不需要重复获取用户 */
-            if (username != null && bitType != BizTypeEnum.USER_LOGIN) {
+            if (username != null && bitType != BizTypeEnum.USER_LOGIN
+                && bitType != BizTypeEnum.USER_REGISTER) {
                 User user = userProcessor.getUserByUsername(username);
                 ThreadUtil.setUser(user);
             }
