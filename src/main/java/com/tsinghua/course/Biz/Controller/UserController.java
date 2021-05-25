@@ -6,6 +6,7 @@ import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
+import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.*;
@@ -14,6 +15,10 @@ import com.tsinghua.course.Frame.Util.*;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @描述 用户控制器，用于执行用户相关的业务
@@ -85,6 +90,36 @@ public class UserController {
         return new CommonOutParams(true);
     }
 
+    /** 修改用户名业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_USERNAME)
+    public CommonOutParams userUsername(UsernameInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String name = inParams.getName();
+
+        /** 修改用户名 */
+        if (userProcessor.updateUsername(username, name) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.USERNAME_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 修改昵称业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_NICKNAME)
+    public CommonOutParams userNickname(NicknameInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String nickname = inParams.getNickname();
+
+        /** 修改用户名 */
+        if (userProcessor.updateNickname(username, nickname) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.NICKNAME_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
     /** 查找用户业务 */
     @NeedLogin
     @BizType(BizTypeEnum.USER_SEARCH)
@@ -93,8 +128,8 @@ public class UserController {
         User user = userProcessor.getUserByUsername(search);
 
         if (user == null)
-        /** 查找用户不存在 */
-            throw new CourseWarn(UserWarnEnum.SEARCH_NOT_EXIST);
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
 
         /** 删除部分信息 */
         user.setPassword(null);
@@ -102,5 +137,45 @@ public class UserController {
         user.setPrivateChatMap(null);
 
         return new SearchOutParams(true,user);
+    }
+
+    /** 添加联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_ADD)
+    public CommonOutParams userAdd(AddInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String add = inParams.getAdd();
+
+        if (userProcessor.addContact(username, add) == 0)
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 删除联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_DELETE)
+    public CommonOutParams userDelete(DeleteInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String delete = inParams.getDelete();
+
+        if (userProcessor.deleteContact(username, delete) == 0)
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 浏览联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_VIEW)
+    public ContactsOutParams userView(CommonInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+
+        List<String> contactsId = userProcessor.viewContacts(username);
+        Map<String,String> contacts = userProcessor.getNicknameById(contactsId);
+
+        return new ContactsOutParams(true,new ArrayList<>(contacts.values()));
     }
 }

@@ -11,6 +11,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @描述 用户原子处理器，所有与用户相关的原子操作都在此处理器中执行
  **/
@@ -41,9 +46,90 @@ public class UserProcessor {
     public long updatePassword(String username, String password) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
-        Update update = Update.update("password",password);
+        Update update = Update.update(KeyConstant.PASSWORD,password);
         UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
         return result.getModifiedCount();
+    }
+
+    /** 修改用户名 */
+    public long updateUsername(String username, String name) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update(KeyConstant.USERNAME,name);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 修改昵称 */
+    public long updateNickname(String username, String nickname) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update(KeyConstant.NICKNAME,nickname);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 添加联系人 */
+    public long addContact(String username, String add) {
+        Query query1 = new Query();
+        query1.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        User user = mongoTemplate.findOne(query1,User.class);
+
+        Query query2 = new Query();
+        query2.addCriteria(Criteria.where(KeyConstant.USERNAME).is(add));
+        User contact = mongoTemplate.findOne(query2, User.class);
+        if (contact == null)
+            return 0;
+
+        List<String> contacts = user.getContacts();
+        if (!contacts.contains(contact.getId()))
+            contacts.add(contact.getId());
+
+        Update update = Update.update(KeyConstant.CONTACTS,contacts);
+        UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 删除联系人 */
+    public long deleteContact(String username, String delete) {
+        Query query1 = new Query();
+        query1.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        User user = mongoTemplate.findOne(query1,User.class);
+
+        Query query2 = new Query();
+        query2.addCriteria(Criteria.where(KeyConstant.USERNAME).is(delete));
+        User contact = mongoTemplate.findOne(query2, User.class);
+        if (contact == null)
+            return 0;
+
+        List<String> contacts = user.getContacts();
+        contacts.remove(contact.getId());
+
+        Update update = Update.update(KeyConstant.CONTACTS,contacts);
+        UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 浏览联系人列表 */
+    public List<String> viewContacts(String username) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        User user = mongoTemplate.findOne(query,User.class);
+
+        return user.getContacts();
+    }
+
+    /** 获得ID与昵称对应关系 */
+    public Map<String,String> getNicknameById(List<String> ids) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.ID).in(ids));
+        List<User> users = mongoTemplate.find(query,User.class);
+
+        Map<String,String> map = new HashMap<>();
+        for (User user:users){
+            map.put(user.getId(),user.getNickname());
+        }
+        return map;
     }
 
     /** 获得与另一用户的私聊聊天对象 */
