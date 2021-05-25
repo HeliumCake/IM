@@ -3,6 +3,9 @@ package com.tsinghua.course.Base.Model;
 import com.tsinghua.course.Base.Enum.MomentType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @描述 对应mongodb中的Moment集合
  **/
@@ -16,6 +19,48 @@ public class Moment {
     MomentType momentType;
     // 动态文本
     String text;
+    // 点赞列表
+    List<String> thumbs = new ArrayList<>();
+    /** 单条回复类 */
+    public static class Reply {
+        // 发送者id
+        String sender;
+        // 回复文本
+        String text;
+        // 回复时间
+        String time;
+
+        public Reply(String sender, String text, String time) {
+            this.sender = sender;
+            this.text = text;
+            this.time = time;
+        }
+        public String getSender() {
+            return sender;
+        }
+
+        public void setSender(String sender) {
+            this.sender = sender;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+    }
+    List<Reply> replies = new ArrayList<>();
+
     /** 存储的时间 */
     String time;
 
@@ -49,6 +94,22 @@ public class Moment {
 
     public void setMomentType(MomentType momentType) {
         this.momentType = momentType;
+    }
+
+    public List<String> getThumbs() {
+        return thumbs;
+    }
+
+    public void setThumbs(List<String> thumbs) {
+        this.thumbs = thumbs;
+    }
+
+    public List<Reply> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(List<Reply> replies) {
+        this.replies = replies;
     }
 
     public String getTime() {

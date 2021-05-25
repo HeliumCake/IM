@@ -34,6 +34,13 @@ public class UserProcessor {
         return mongoTemplate.findOne(query, User.class);
     }
 
+    /** 根据id从数据库中获取用户 */
+    public User getUserById(String id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.ID).is(id));
+        return mongoTemplate.findOne(query, User.class);
+    }
+
     /** 向数据库中添加用户 */
     public User addUser(String username, String password) {
         User user = new User();
