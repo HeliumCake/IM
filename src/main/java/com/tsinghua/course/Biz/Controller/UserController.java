@@ -1,13 +1,13 @@
 package com.tsinghua.course.Biz.Controller;
 
 import com.tsinghua.course.Base.Annotation.BizType;
+import com.tsinghua.course.Base.Annotation.NeedLogin;
 import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
-import com.tsinghua.course.Biz.Controller.Params.UserParams.In.LoginInParams;
-import com.tsinghua.course.Biz.Controller.Params.UserParams.In.RegisterInParams;
+import com.tsinghua.course.Biz.Controller.Params.UserParams.In.*;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
 import com.tsinghua.course.Frame.Util.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -62,6 +62,24 @@ public class UserController {
         if (userProcessor.addUser(username, password) == null)
             /** 写入数据库失败 */
             throw new CourseWarn(UserWarnEnum.REGISTER_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 修改密码业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_PASSWORD)
+    public CommonOutParams userPassword(PasswordInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String password = inParams.getPassword();
+        if (password == null)
+            throw new CourseWarn(UserWarnEnum.PASSWORD_LACK);
+        User user = userProcessor.getUserByUsername(username);
+
+        /** 修改密码 */
+        if (userProcessor.updatePassword(username, password) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.PASSWORD_FAILED);
 
         return new CommonOutParams(true);
     }

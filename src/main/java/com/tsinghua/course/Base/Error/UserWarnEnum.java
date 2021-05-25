@@ -14,7 +14,11 @@ public enum UserWarnEnum implements ExceptionInterface {
 
     REGISTER_LACK("UserWarn005", "缺少用户名或密码"),
 
-    REGISTER_FAILED("UserWarn006", "注册失败")
+    REGISTER_FAILED("UserWarn006", "注册失败"),
+
+    PASSWORD_LACK("UserWarn007", "新密码不能为空"),
+
+    PASSWORD_FAILED("UserWarn008", "修改密码失败")
     ;
 
     UserWarnEnum(String code, String msg) {

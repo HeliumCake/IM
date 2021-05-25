@@ -1,11 +1,13 @@
 package com.tsinghua.course.Biz.Processor;
 
+import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,5 +31,13 @@ public class UserProcessor {
         user.setUsername(username);
         user.setPassword(password);
         return mongoTemplate.insert(user);
+    }
+
+    public long updatePassword(String username, String password) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update("password",password);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
     }
 }
