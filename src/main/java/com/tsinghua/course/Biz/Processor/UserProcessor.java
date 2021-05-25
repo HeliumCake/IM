@@ -46,7 +46,25 @@ public class UserProcessor {
     public long updatePassword(String username, String password) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
-        Update update = Update.update("password",password);
+        Update update = Update.update(KeyConstant.PASSWORD,password);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 修改用户名 */
+    public long updateUsername(String username, String name) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update(KeyConstant.USERNAME,name);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
+    }
+
+    /** 修改昵称 */
+    public long updateNickname(String username, String nickname) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update(KeyConstant.NICKNAME,nickname);
         UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
         return result.getModifiedCount();
     }
@@ -67,7 +85,7 @@ public class UserProcessor {
         if (!contacts.contains(contact.getId()))
             contacts.add(contact.getId());
 
-        Update update = Update.update("contacts",contacts);
+        Update update = Update.update(KeyConstant.CONTACTS,contacts);
         UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
         return result.getModifiedCount();
     }
@@ -87,7 +105,7 @@ public class UserProcessor {
         List<String> contacts = user.getContacts();
         contacts.remove(contact.getId());
 
-        Update update = Update.update("contacts",contacts);
+        Update update = Update.update(KeyConstant.CONTACTS,contacts);
         UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
         return result.getModifiedCount();
     }

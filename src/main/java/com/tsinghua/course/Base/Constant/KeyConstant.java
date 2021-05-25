@@ -19,6 +19,12 @@ public class KeyConstant {
     /** 以下为User关键key */
     // 用户名
     public static final String USERNAME = "username";
+    // 昵称
+    public static final String NICKNAME = "nickname";
+    // 密码
+    public static final String PASSWORD = "password";
+    // 联系人
+    public static final String CONTACTS = "contacts";
     // 私聊聊天id映射
     public static final String PRIVATE_CHAT_MAP = "privateChatMap";
 

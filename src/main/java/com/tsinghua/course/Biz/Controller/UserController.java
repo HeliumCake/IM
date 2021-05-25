@@ -90,6 +90,36 @@ public class UserController {
         return new CommonOutParams(true);
     }
 
+    /** 修改用户名业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_USERNAME)
+    public CommonOutParams userUsername(UsernameInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String name = inParams.getName();
+
+        /** 修改用户名 */
+        if (userProcessor.updateUsername(username, name) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.USERNAME_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 修改昵称业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_NICKNAME)
+    public CommonOutParams userNickname(NicknameInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String nickname = inParams.getNickname();
+
+        /** 修改用户名 */
+        if (userProcessor.updateNickname(username, nickname) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.NICKNAME_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
     /** 查找用户业务 */
     @NeedLogin
     @BizType(BizTypeEnum.USER_SEARCH)

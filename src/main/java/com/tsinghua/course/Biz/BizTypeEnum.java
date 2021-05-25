@@ -15,6 +15,8 @@ public enum BizTypeEnum {
     USER_LOGIN(UserController.class, "/user/login", "用户登录"),
     USER_REGISTER(UserController.class, "/user/register", "用户注册"),
     USER_PASSWORD(UserController.class, "/user/password", "修改密码"),
+    USER_USERNAME(UserController.class, "/user/username", "修改用户名"),
+    USER_NICKNAME(UserController.class, "/user/nickname", "修改昵称"),
     USER_SEARCH(UserController.class, "/user/search", "查找用户"),
     USER_ADD(UserController.class, "/user/add", "添加联系人"),
     USER_DELETE(UserController.class, "/user/delete", "删除联系人"),
