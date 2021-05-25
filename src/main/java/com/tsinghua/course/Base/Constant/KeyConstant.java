@@ -41,4 +41,6 @@ public class KeyConstant {
     public static final String GROUP_TYPE = "groupType";
     // 聊天成员的id列表
     public static final String MEMBER_LIST = "memberList";
+    // 聊天消息列表
+    public static final String CHATS = "chats";
 }

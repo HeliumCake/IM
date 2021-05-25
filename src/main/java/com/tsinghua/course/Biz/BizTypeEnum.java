@@ -1,11 +1,6 @@
 package com.tsinghua.course.Biz;
 
-import com.tsinghua.course.Base.Model.Moment;
-import com.tsinghua.course.Biz.Controller.ChatController;
-import com.tsinghua.course.Biz.Controller.MomentController;
-import com.tsinghua.course.Biz.Controller.TestController;
-import com.tsinghua.course.Biz.Controller.TimerController;
-import com.tsinghua.course.Biz.Controller.UserController;
+import com.tsinghua.course.Biz.Controller.*;
 
 /**
  * @描述 业务类型枚举，所有的业务类型都需要枚举在此类中
@@ -31,6 +26,9 @@ public enum BizTypeEnum {
 
     /** 聊天会话相关 */
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),
+    QUERY_CHAT_INFO(ChatController.class, "/chat/info", "获得指定聊天的信息"),
+    ADD_CHAT_MESSAGE(ChatController.class, "/chat/addMessage", "添加指定聊天的聊天消息"),
+    GET_CHAT_MESSAGE(ChatController.class, "/chat/getMessage", "获得指定聊天的聊天消息"),
 
     /** 定时任务业务测试 */
     LOG_TEST(TimerController.class, null, "定时日志测试"),

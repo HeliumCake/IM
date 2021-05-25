@@ -139,6 +139,7 @@ public class UserProcessor {
         return map;
     }
 
+    /** 获得与另一用户的私聊聊天对象 */
     public ChatGroup getPrivateChatWith(String username, String other) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
@@ -150,6 +151,7 @@ public class UserProcessor {
         return chatProcessor.getChatGroupById(groupId);
     }
 
+    /** 设置与另一用户的私聊聊天对象 */
     public void setPrivateChatWith(String username, String other, String chatGroupId)
     {
         Query query = new Query();

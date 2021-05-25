@@ -29,9 +29,10 @@ public class ChatGroup
 	List<String> adminList;
 
 	/**
-	 * 单条聊天信息类
+	 * 单条聊天消息类
 	 */
-	public static class ChatElement {
+	public static class ChatMessage
+	{
 		/**
 		 * 创建时间
 		 */
@@ -52,12 +53,52 @@ public class ChatGroup
 		 * 附件文件内容，长度限制 15MB
 		 */
 		Byte[] attachmentContent;
+
+		public ChatMessage() {
+			this.timeCreated = new Date();
+		}
+
+		public Date getTimeCreated() {
+			return timeCreated;
+		}
+
+		public void setSenderId(String senderId) {
+			this.senderId = senderId;
+		}
+
+		public String getSenderId() {
+			return senderId;
+		}
+
+		public void setText(String text) {
+			this.text = text;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public void setAttachmentName(String attachmentName) {
+			this.attachmentName = attachmentName;
+		}
+
+		public String getAttachmentName() {
+			return attachmentName;
+		}
+
+		public void setAttachmentContent(Byte[] attachmentContent) {
+			this.attachmentContent = attachmentContent;
+		}
+
+		public Byte[] getAttachmentContent() {
+			return attachmentContent;
+		}
 	}
 
 	/**
-	 * 聊天历史
+	 * 聊天消息列表
 	 */
-	List<ChatElement> chats;
+	List<ChatMessage> chats;
 
 	public String getId()
 	{
@@ -79,7 +120,7 @@ public class ChatGroup
 		return adminList;
 	}
 
-	public List<ChatElement> getChats()
+	public List<ChatMessage> getChats()
 	{
 		return chats;
 	}
@@ -99,7 +140,7 @@ public class ChatGroup
 		this.adminList = adminList;
 	}
 
-	public void setChats(List<ChatElement> chats)
+	public void setChats(List<ChatMessage> chats)
 	{
 		this.chats = chats;
 	}
