@@ -22,6 +22,10 @@ public class KeyConstant {
     // 私聊聊天id映射
     public static final String PRIVATE_CHAT_MAP = "privateChatMap";
 
+    /** 以下为Moment关键key */
+    // 发布者
+    public static final String PUBLISHER = "publisher";
+
     /** 以下为ChatGroup关键key */
     // 用户名
     public static final String GROUP_TYPE = "groupType";

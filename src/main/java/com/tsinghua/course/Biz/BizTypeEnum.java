@@ -1,6 +1,8 @@
 package com.tsinghua.course.Biz;
 
+import com.tsinghua.course.Base.Model.Moment;
 import com.tsinghua.course.Biz.Controller.ChatController;
+import com.tsinghua.course.Biz.Controller.MomentController;
 import com.tsinghua.course.Biz.Controller.TestController;
 import com.tsinghua.course.Biz.Controller.TimerController;
 import com.tsinghua.course.Biz.Controller.UserController;
@@ -13,6 +15,11 @@ public enum BizTypeEnum {
     USER_LOGIN(UserController.class, "/user/login", "用户登录"),
     USER_REGISTER(UserController.class, "/user/register", "用户注册"),
     USER_PASSWORD(UserController.class, "/user/password", "修改密码"),
+
+    /** 以下为动态业务类型 */
+    MOMENT_PUBLISH(MomentController.class, "/moment/publish", "发布动态"),
+    MOMENT_VIEW_USER(MomentController.class, "/moment/view/user", "浏览单个用户的动态"),
+    MOMENT_VIEW_CONTACTS(MomentController.class, "/moment/view/contacts", "浏览所有联系人的动态"),
 
     /** 聊天会话相关 */
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),

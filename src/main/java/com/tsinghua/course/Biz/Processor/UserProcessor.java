@@ -37,6 +37,7 @@ public class UserProcessor {
         return mongoTemplate.insert(user);
     }
 
+    /** 修改密码 */
     public long updatePassword(String username, String password) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
