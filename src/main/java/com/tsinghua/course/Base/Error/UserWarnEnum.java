@@ -20,7 +20,7 @@ public enum UserWarnEnum implements ExceptionInterface {
 
     PASSWORD_FAILED("UserWarn008", "修改密码失败"),
 
-    SEARCH_NOT_EXIST("UserWarn009", "查找用户不存在")
+    USER_NOT_EXIST("UserWarn009", "用户不存在")
     ;
 
     UserWarnEnum(String code, String msg) {

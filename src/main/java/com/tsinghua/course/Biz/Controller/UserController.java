@@ -93,8 +93,8 @@ public class UserController {
         User user = userProcessor.getUserByUsername(search);
 
         if (user == null)
-        /** 查找用户不存在 */
-            throw new CourseWarn(UserWarnEnum.SEARCH_NOT_EXIST);
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
 
         /** 删除部分信息 */
         user.setPassword(null);
@@ -102,5 +102,33 @@ public class UserController {
         user.setPrivateChatMap(null);
 
         return new SearchOutParams(true,user);
+    }
+
+    /** 添加联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_ADD)
+    public CommonOutParams userAdd(AddInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String add = inParams.getAdd();
+
+        if (userProcessor.addContact(username, add) == 0)
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 删除联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_DELETE)
+    public CommonOutParams userDelete(DeleteInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String delete = inParams.getDelete();
+
+        if (userProcessor.deleteContact(username, delete) == 0)
+        /** 用户不存在 */
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
+
+        return new CommonOutParams(true);
     }
 }
