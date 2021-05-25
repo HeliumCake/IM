@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,15 +101,15 @@ public class UserProcessor {
         return user.getContacts();
     }
 
-    /** 获得ID与用户名对应关系 */
-    public Map<String,String> getUsernameById(List<String> username) {
+    /** 获得ID与昵称对应关系 */
+    public Map<String,String> getNicknameById(List<String> ids) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(KeyConstant.USERNAME).in(username));
+        query.addCriteria(Criteria.where(KeyConstant.ID).in(ids));
         List<User> users = mongoTemplate.find(query,User.class);
 
         Map<String,String> map = new HashMap<>();
         for (User user:users){
-            map.put(user.getId(),user.getUsername());
+            map.put(user.getId(),user.getNickname());
         }
         return map;
     }

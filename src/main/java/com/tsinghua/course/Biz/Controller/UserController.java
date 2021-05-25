@@ -6,6 +6,7 @@ import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
+import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.*;
@@ -14,6 +15,10 @@ import com.tsinghua.course.Frame.Util.*;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @描述 用户控制器，用于执行用户相关的业务
@@ -130,5 +135,17 @@ public class UserController {
             throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
 
         return new CommonOutParams(true);
+    }
+
+    /** 浏览联系人业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_VIEW)
+    public ContactsOutParams userView(CommonInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+
+        List<String> contactsId = userProcessor.viewContacts(username);
+        Map<String,String> contacts = userProcessor.getNicknameById(contactsId);
+
+        return new ContactsOutParams(true,new ArrayList<>(contacts.values()));
     }
 }
