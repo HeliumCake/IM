@@ -8,6 +8,7 @@ import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.In.*;
+import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.*;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
 import com.tsinghua.course.Frame.Util.*;
 import io.netty.channel.ChannelHandlerContext;
@@ -82,5 +83,24 @@ public class UserController {
             throw new CourseWarn(UserWarnEnum.PASSWORD_FAILED);
 
         return new CommonOutParams(true);
+    }
+
+    /** 查找用户业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_SEARCH)
+    public SearchOutParams userSearch(SearchInParams inParams) throws Exception {
+        String search = inParams.getSearch();
+        User user = userProcessor.getUserByUsername(search);
+
+        if (user == null)
+        /** 查找用户不存在 */
+            throw new CourseWarn(UserWarnEnum.SEARCH_NOT_EXIST);
+
+        /** 删除部分信息 */
+        user.setPassword(null);
+        user.setContacts(null);
+        user.setPrivateChatMap(null);
+
+        return new SearchOutParams(true,user);
     }
 }

@@ -14,6 +14,8 @@ public class User {
     String id;
     // 用户名
     String username;
+    // 昵称
+    String nickname = "nickname";
     // 密码
     String password;
     // 用户类型
@@ -30,6 +32,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getId() {
