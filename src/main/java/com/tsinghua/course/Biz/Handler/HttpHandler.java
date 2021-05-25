@@ -5,9 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Constant.NameConstant;
-import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Error.SystemErrorEnum;
+import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
 import com.tsinghua.course.Biz.Controller.Params.DefaultParams.Out.SysErrorOutParams;
 import com.tsinghua.course.Biz.Controller.Params.DefaultParams.Out.SysWarnOutParams;
@@ -22,21 +22,12 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
-import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
-import io.netty.handler.codec.http.multipart.FileUpload;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
-import io.netty.handler.codec.http.multipart.MixedAttribute;
+import io.netty.handler.codec.http.multipart.*;
 import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -88,8 +79,8 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             params.fromJsonObject(requestParams);
 
             /** 获取缓存在session中的用户名信息 */
-            if (hasPreSession.get() && !bizTypeEnum.equals(BizTypeEnum.USER_LOGIN)
-                && !bizTypeEnum.equals(BizTypeEnum.USER_REGISTER)) {
+            // 当业务为用户注册/登录时，不使用缓存
+            if (hasPreSession.get() && !bizTypeEnum.equals(BizTypeEnum.USER_LOGIN) && !bizTypeEnum.equals(BizTypeEnum.USER_REGISTER)) {
                 params.setUsername(ThreadUtil.getHttpSession().getUsername());
             }
 

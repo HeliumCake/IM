@@ -68,7 +68,16 @@ public abstract class CommonParams {
                         Array.set(fillArr, 0, obj);
                         field.set(this, fillArr);
                     }
-                } else {
+                }
+                /** 对于枚举类的特殊处理 */
+                else if (field.getType().isEnum()) {
+                    try {
+                        field.set(this, Enum.valueOf((Class<? extends Enum>)field.getType(), obj.toString().toUpperCase()));
+                    } catch (Exception e) {
+                        field.set(this, null);
+                    }
+                }
+                else {
                     /** 不是数组直接赋值 */
                     try {
                         field.set(this, obj);

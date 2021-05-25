@@ -10,19 +10,6 @@ import java.util.Map;
  **/
 @Document("User")
 public class User {
-    /** 子对象文档 */
-    public static class SubObj {
-        /** 存储的时间 */
-        String time;
-
-        public String getTime() {
-            return time;
-        }
-
-        public void setTime(String time) {
-            this.time = time;
-        }
-    }
     // mongodb唯一id
     String id;
     // 用户名
@@ -31,12 +18,9 @@ public class User {
     String password;
     // 用户类型
     UserType userType;
-    // 测试数组
-    String[] testArr;
-    // 测试对象
-    Map<String, String> testObj;
-    // 另一个测试对象，和 Map<String, String> 方式存储的格式是一样的，但是直观很多
-    SubObj subObj;
+
+    // 私聊聊天id映射，储存着用户名对应着的私聊id
+    Map<String, String> privateChatMap;
 
     public String getUsername() {
         return username;
@@ -70,27 +54,11 @@ public class User {
         this.userType = userType;
     }
 
-    public String[] getTestArr() {
-        return testArr;
+    public Map<String, String> getPrivateChatMap() {
+        return privateChatMap;
     }
 
-    public void setTestArr(String[] testArr) {
-        this.testArr = testArr;
-    }
-
-    public Map<String, String> getTestObj() {
-        return testObj;
-    }
-
-    public void setTestObj(Map<String, String> testObj) {
-        this.testObj = testObj;
-    }
-
-    public SubObj getSubObj() {
-        return subObj;
-    }
-
-    public void setSubObj(SubObj subObj) {
-        this.subObj = subObj;
+    public void setPrivateChatMap(Map<String, String> privateChatMap) {
+        this.privateChatMap = privateChatMap;
     }
 }

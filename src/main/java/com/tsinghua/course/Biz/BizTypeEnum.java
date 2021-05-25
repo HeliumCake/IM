@@ -1,5 +1,6 @@
 package com.tsinghua.course.Biz;
 
+import com.tsinghua.course.Biz.Controller.ChatController;
 import com.tsinghua.course.Biz.Controller.TestController;
 import com.tsinghua.course.Biz.Controller.TimerController;
 import com.tsinghua.course.Biz.Controller.UserController;
@@ -12,6 +13,9 @@ public enum BizTypeEnum {
     USER_LOGIN(UserController.class, "/user/login", "用户登录"),
     USER_REGISTER(UserController.class, "/user/register", "用户注册"),
     USER_PASSWORD(UserController.class, "/user/password", "修改密码"),
+
+    /** 聊天会话相关 */
+    CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),
 
     /** 定时任务业务测试 */
     LOG_TEST(TimerController.class, null, "定时日志测试"),

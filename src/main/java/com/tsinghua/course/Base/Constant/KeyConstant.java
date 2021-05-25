@@ -12,7 +12,19 @@ public class KeyConstant {
     // 操作类型
     public static final String BIZ_TYPE = "bizType";
 
+    /** 以下为通用关键key */
+    // 用户名
+    public static final String ID = "id";
+
     /** 以下为User关键key */
     // 用户名
     public static final String USERNAME = "username";
+    // 私聊聊天id映射
+    public static final String PRIVATE_CHAT_MAP = "privateChatMap";
+
+    /** 以下为ChatGroup关键key */
+    // 用户名
+    public static final String GROUP_TYPE = "groupType";
+    // 聊天成员的id列表
+    public static final String MEMBER_LIST = "memberList";
 }
