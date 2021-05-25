@@ -18,6 +18,8 @@ public class User {
     String password;
     // 用户类型
     UserType userType;
+    // 联系人
+    String[] contacts;
 
     // 私聊聊天id映射，储存着用户名对应着的私聊id
     Map<String, String> privateChatMap;
@@ -52,6 +54,14 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public String[] getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(String[] contacts) {
+        this.contacts = contacts;
     }
 
     public Map<String, String> getPrivateChatMap() {
