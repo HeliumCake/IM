@@ -48,7 +48,7 @@ public class ChatController {
 			if (params.getMemberList().size() != 2) {
 				throw new CourseWarn(ChatWarnEnum.ILLEGAL_PARAMETER);
 			}
-			ChatGroup chatGroup = userProcessor.getPrivateChatWith(params.getMemberList().get(0), params.getMemberList().get(1));
+			ChatGroup chatGroup = chatProcessor.getPrivateChatWith(params.getMemberList().get(0), params.getMemberList().get(1));
 			if (chatGroup != null) {
 				result.setChatGroupId(chatGroup.getId());
 				result.setSuccess(false);
@@ -57,11 +57,6 @@ public class ChatController {
 		}
 		ChatGroup chatGroup = chatProcessor.createChat(params.getGroupType(), params.getMemberList());
 		result.setChatGroupId(chatGroup.getId());
-
-		if (params.getGroupType() == ChatGroupType.PRIVATE_CHAT) {
-			userProcessor.setPrivateChatWith(params.getMemberList().get(0), params.getMemberList().get(1), chatGroup.getId());
-			userProcessor.setPrivateChatWith(params.getMemberList().get(1), params.getMemberList().get(0), chatGroup.getId());
-		}
 		return result;
 	}
 

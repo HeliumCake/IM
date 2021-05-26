@@ -3,7 +3,8 @@ package com.tsinghua.course.Base.Model;
 import com.tsinghua.course.Base.Enum.UserType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @描述 对应mongodb中的User集合，mongodb是非关系型数据库，可以存储的对象类型很丰富，使用起来方便很多
@@ -22,9 +23,6 @@ public class User {
     UserType userType;
     // 联系人
     List<String> contacts = new ArrayList<>();
-
-    // 私聊聊天id映射，储存着用户名对应着的私聊id
-    Map<String, String> privateChatMap;
 
     public String getUsername() {
         return username;
@@ -72,13 +70,5 @@ public class User {
 
     public void setContacts(List<String> contacts) {
         this.contacts = contacts;
-    }
-
-    public Map<String, String> getPrivateChatMap() {
-        return privateChatMap;
-    }
-
-    public void setPrivateChatMap(Map<String, String> privateChatMap) {
-        this.privateChatMap = privateChatMap;
     }
 }

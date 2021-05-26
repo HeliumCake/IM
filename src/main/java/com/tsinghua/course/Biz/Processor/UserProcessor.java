@@ -2,7 +2,6 @@ package com.tsinghua.course.Biz.Processor;
 
 import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
-import com.tsinghua.course.Base.Model.ChatGroup;
 import com.tsinghua.course.Base.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,26 +128,5 @@ public class UserProcessor {
             map.put(user.getId(),user.getNickname());
         }
         return map;
-    }
-
-    /** 获得与另一用户的私聊聊天对象 */
-    public ChatGroup getPrivateChatWith(String username, String other) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
-        User user = mongoTemplate.findOne(query, User.class);
-        String groupId = user.getPrivateChatMap().get(other);
-        if (groupId == null) {
-            return null;
-        }
-        return chatProcessor.getChatGroupById(groupId);
-    }
-
-    /** 设置与另一用户的私聊聊天对象 */
-    public void setPrivateChatWith(String username, String other, String chatGroupId)
-    {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
-        Update update = new Update().set(KeyConstant.PRIVATE_CHAT_MAP + "." + other, chatGroupId);
-        mongoTemplate.updateFirst(query, update, User.class);
     }
 }

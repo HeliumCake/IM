@@ -38,6 +38,44 @@ public class ChatProcessor {
 	}
 
 	/**
+	 * 获得与另一用户的私聊聊天对象
+	 */
+	public ChatGroup getPrivateChatWith(String username, String other) {
+		Query query = new Query();
+		query.addCriteria(
+				Criteria.where(KeyConstant.GROUP_TYPE).is(ChatGroupType.PRIVATE_CHAT).
+						and(KeyConstant.MEMBER_LIST).all(username, other)
+		);
+		return mongoTemplate.findOne(query, ChatGroup.class);
+	}
+
+	/**
+	 * 获得某一用户加入的所有群聊与私聊
+	 */
+	public List<ChatGroup> getChats(String username, ChatGroupType groupType) {
+		Query query = new Query();
+		query.addCriteria(
+				Criteria.where(KeyConstant.GROUP_TYPE).is(groupType).
+						and(KeyConstant.MEMBER_LIST).all(username)
+		);
+		return mongoTemplate.find(query, ChatGroup.class);
+	}
+
+	/**
+	 * 获得某一用户加入的所有群聊
+	 */
+	public List<ChatGroup> getGroupChats(String username) {
+		return getChats(username, ChatGroupType.PRIVATE_CHAT);
+	}
+
+	/**
+	 * 获得某一用户加入的所有私聊
+	 */
+	public List<ChatGroup> getPrivateChats(String username) {
+		return getChats(username, ChatGroupType.GROUP_CHAT);
+	}
+
+	/**
 	 * 通过聊天id返回聊天对象，若不存在则返回null
 	 */
 	public ChatGroup getChatGroupById(String groupId) {
