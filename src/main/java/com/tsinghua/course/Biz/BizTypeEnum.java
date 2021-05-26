@@ -21,6 +21,8 @@ public enum BizTypeEnum {
     MOMENT_PUBLISH(MomentController.class, "/moment/publish", "发布动态"),
     MOMENT_VIEW_USER(MomentController.class, "/moment/view/user", "浏览单个用户的动态"),
     MOMENT_VIEW_CONTACTS(MomentController.class, "/moment/view/contacts", "浏览所有联系人的动态"),
+    MOMENT_THUMB(MomentController.class, "/moment/thumb", "点赞动态"),
+    MOMENT_REPLY(MomentController.class, "/moment/reply", "回复动态"),
 
     /** 聊天会话相关 */
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),

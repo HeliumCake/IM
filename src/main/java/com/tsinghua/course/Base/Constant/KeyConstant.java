@@ -31,6 +31,10 @@ public class KeyConstant {
     /** 以下为Moment关键key */
     // 发布者
     public static final String PUBLISHER = "publisher";
+    // 点赞列表
+    public static final String THUMBS = "thumbs";
+    // 回复列表
+    public static final String REPLIES = "replies";
 
     /** 以下为ChatGroup关键key */
     // 用户名
