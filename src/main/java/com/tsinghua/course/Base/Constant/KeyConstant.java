@@ -21,6 +21,8 @@ public class KeyConstant {
     public static final String USERNAME = "username";
     // 昵称
     public static final String NICKNAME = "nickname";
+    // 头像
+    public static final String AVATAR = "avatar";
     // 密码
     public static final String PASSWORD = "password";
     // 联系人

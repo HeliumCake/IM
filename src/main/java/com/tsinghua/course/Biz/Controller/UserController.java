@@ -115,10 +115,25 @@ public class UserController {
         String username = inParams.getUsername();
         String nickname = inParams.getNickname();
 
-        /** 修改用户名 */
+        /** 修改昵称 */
         if (userProcessor.updateNickname(username, nickname) == 0)
         /** 写入数据库失败 */
             throw new CourseWarn(UserWarnEnum.NICKNAME_FAILED);
+
+        return new CommonOutParams(true);
+    }
+
+    /** 修改头像业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_AVATAR)
+    public CommonOutParams userAvatar(AvatarInParams inParams) throws Exception {
+        String username = inParams.getUsername();
+        String avatar = inParams.getAvatar();
+
+        /** 修改头像 */
+        if (userProcessor.updateAvatar(username, avatar) == 0)
+        /** 写入数据库失败 */
+            throw new CourseWarn(UserWarnEnum.AVATAR_FAILED);
 
         return new CommonOutParams(true);
     }
@@ -128,17 +143,23 @@ public class UserController {
     @BizType(BizTypeEnum.USER_SEARCH)
     public SearchOutParams userSearch(SearchInParams inParams) throws Exception {
         String search = inParams.getSearch();
-        User user = userProcessor.getUserByUsername(search);
+        String username = inParams.getUsername();
+        User userSearch = userProcessor.getUserByUsername(search);
+        User user = userProcessor.getUserByUsername(username);
 
-        if (user == null)
+        if (userSearch == null)
         /** 用户不存在 */
             throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
 
         /** 删除部分信息 */
-        user.setPassword(null);
-        user.setContacts(null);
+        userSearch.setPassword(null);
+        if (!username.equals(search)){
+            userSearch.setContacts(null);
+        }
 
-        return new SearchOutParams(true,user);
+        boolean isContact = user.getContacts().contains(userSearch.getId());
+
+        return new SearchOutParams(true,userSearch,isContact);
     }
 
     /** 添加联系人业务 */
@@ -175,9 +196,8 @@ public class UserController {
     public ContactsOutParams userView(CommonInParams inParams) throws Exception {
         String username = inParams.getUsername();
 
-        List<String> contactsId = userProcessor.viewContacts(username);
-        Map<String,String> contacts = userProcessor.getNicknameById(contactsId);
+        List<User> contacts = userProcessor.viewContacts(username);
 
-        return new ContactsOutParams(true,new ArrayList<>(contacts.values()));
+        return new ContactsOutParams(true,contacts);
     }
 }

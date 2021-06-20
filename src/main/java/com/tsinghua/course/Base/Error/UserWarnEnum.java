@@ -24,7 +24,9 @@ public enum UserWarnEnum implements ExceptionInterface {
 
     NICKNAME_FAILED("UserWarn010", "修改昵称失败"),
 
-    USER_NOT_EXIST("UserWarn011", "用户不存在")
+    AVATAR_FAILED("UserWarn011","修改头像失败"),
+
+    USER_NOT_EXIST("UserWarn012", "用户不存在")
     ;
 
     UserWarnEnum(String code, String msg) {

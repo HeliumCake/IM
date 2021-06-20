@@ -9,10 +9,12 @@ import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 public class SearchOutParams extends CommonOutParams {
     // 查找到的用户信息
     private User user;
+    private boolean isContact;
 
-    public SearchOutParams(boolean success, User user) {
+    public SearchOutParams(boolean success, User user, boolean isContact) {
         this.success = success;
         this.user = user;
+        this.isContact = isContact;
     }
 
     public User getUser() {
@@ -21,5 +23,13 @@ public class SearchOutParams extends CommonOutParams {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean getIsContact(){
+        return isContact;
+    }
+
+    public void setIsContact(boolean isContact){
+        this.isContact = isContact;
     }
 }

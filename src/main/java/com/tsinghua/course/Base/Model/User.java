@@ -19,6 +19,8 @@ public class User {
     String nickname = "nickname";
     // 密码
     String password;
+    // 头像图片名
+    String avatar = "default_avatar.jpg";
     // 用户类型
     UserType userType;
     // 联系人
@@ -54,6 +56,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getAvatar(){
+        return avatar;
+    }
+
+    public void setAvatar(String avatar){
+        this.avatar = avatar;
     }
 
     public UserType getUserType() {

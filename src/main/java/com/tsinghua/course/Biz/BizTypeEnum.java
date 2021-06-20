@@ -12,6 +12,7 @@ public enum BizTypeEnum {
     USER_PASSWORD(UserController.class, "/user/password", "修改密码"),
     USER_USERNAME(UserController.class, "/user/username", "修改用户名"),
     USER_NICKNAME(UserController.class, "/user/nickname", "修改昵称"),
+    USER_AVATAR(UserController.class, "/user/avatar", "修改头像"),
     USER_SEARCH(UserController.class, "/user/search", "查找用户"),
     USER_ADD(UserController.class, "/user/add", "添加联系人"),
     USER_DELETE(UserController.class, "/user/delete", "删除联系人"),
@@ -23,6 +24,8 @@ public enum BizTypeEnum {
     MOMENT_VIEW_CONTACTS(MomentController.class, "/moment/view/contacts", "浏览所有联系人的动态"),
     MOMENT_THUMB(MomentController.class, "/moment/thumb", "点赞动态"),
     MOMENT_REPLY(MomentController.class, "/moment/reply", "回复动态"),
+
+    UPLOAD(UploadController.class, "/upload", "上传文件"),
 
     /** 聊天会话相关 */
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,15 @@ public class UserProcessor {
         return result.getModifiedCount();
     }
 
+    /** 修改头像 */
+    public long updateAvatar(String username, String avatar) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
+        Update update = Update.update(KeyConstant.AVATAR,avatar);
+        UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
+        return result.getModifiedCount();
+    }
+
     /** 添加联系人 */
     public long addContact(String username, String add) {
         Query query1 = new Query();
@@ -116,12 +126,20 @@ public class UserProcessor {
     }
 
     /** 浏览联系人列表 */
-    public List<String> viewContacts(String username) {
+    public List<User> viewContacts(String username) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
         User user = mongoTemplate.findOne(query,User.class);
+        List<String> contact_ids = user.getContacts();
+        List<User> contacts = new ArrayList<>();
+        for (String id : contact_ids){
+            User contact = getUserById(id);
+            contact.setPassword(null);
+            contact.setContacts(null);
+            contacts.add(contact);
+        }
 
-        return user.getContacts();
+        return contacts;
     }
 
     /** 获得ID与昵称对应关系 */
