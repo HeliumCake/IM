@@ -96,13 +96,18 @@ public class UserProcessor {
         if (contact == null)
             return 0;
 
-        List<String> contacts = user.getContacts();
-        if (!contacts.contains(contact.getId()))
-            contacts.add(contact.getId());
+        List<String> contacts1 = user.getContacts();
+        if (!contacts1.contains(contact.getId()))
+            contacts1.add(contact.getId());
+        List<String> contacts2 = contact.getContacts();
+        if (!contacts2.contains(user.getId()))
+            contacts2.add(user.getId());
 
-        Update update = Update.update(KeyConstant.CONTACTS,contacts);
-        UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
-        return result.getModifiedCount();
+        Update update1 = Update.update(KeyConstant.CONTACTS,contacts1);
+        Update update2 = Update.update(KeyConstant.CONTACTS,contacts2);
+        UpdateResult result1 = mongoTemplate.updateFirst(query1,update1,User.class);
+        UpdateResult result2 = mongoTemplate.updateFirst(query2,update2,User.class);
+        return result1.getModifiedCount()+result2.getModifiedCount();
     }
 
     /** 删除联系人 */
