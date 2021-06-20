@@ -122,12 +122,16 @@ public class UserProcessor {
         if (contact == null)
             return 0;
 
-        List<String> contacts = user.getContacts();
-        contacts.remove(contact.getId());
+        List<String> contacts1 = user.getContacts();
+        contacts1.remove(contact.getId());
+        List<String> contacts2 = contact.getContacts();
+        contacts2.remove(user.getId());
 
-        Update update = Update.update(KeyConstant.CONTACTS,contacts);
-        UpdateResult result = mongoTemplate.updateFirst(query1,update,User.class);
-        return result.getModifiedCount();
+        Update update1 = Update.update(KeyConstant.CONTACTS,contacts1);
+        Update update2 = Update.update(KeyConstant.CONTACTS,contacts2);
+        UpdateResult result1 = mongoTemplate.updateFirst(query1,update1,User.class);
+        UpdateResult result2 = mongoTemplate.updateFirst(query2,update2,User.class);
+        return result1.getModifiedCount()+result2.getModifiedCount();
     }
 
     /** 浏览联系人列表 */
