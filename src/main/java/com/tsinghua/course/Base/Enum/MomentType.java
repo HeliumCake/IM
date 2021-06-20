@@ -6,6 +6,7 @@ package com.tsinghua.course.Base.Enum;
 public enum MomentType {
     TEXT("文本"),
     PICTURE("图片"),
+    PICTURE_TEXT("图文"),
     VIDEO("视频")
     ;
 

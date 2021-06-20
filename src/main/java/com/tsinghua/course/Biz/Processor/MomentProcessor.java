@@ -39,11 +39,14 @@ public class MomentProcessor {
     }
 
     /** 向数据库中添加动态 */
-    public Moment addMoment(String publisher, MomentType momentType, String text) {
+    public Moment addMoment(String publisher, MomentType momentType, String text, List<String> pictures,
+                            String video) {
         Moment moment = new Moment();
         moment.setPublisher(publisher);
         moment.setMomentType(momentType);
         moment.setText(text);
+        moment.setPictures(pictures);
+        moment.setVideo(video);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = simpleDateFormat.format(new Date());
         moment.setTime(timeStr);

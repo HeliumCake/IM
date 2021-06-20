@@ -17,6 +17,7 @@ import com.tsinghua.course.Biz.Processor.UserProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,11 +38,28 @@ public class MomentController {
     public CommonOutParams momentPublish(MomentInParams inParams) throws Exception {
         String username = inParams.getUsername();
         MomentType momentType = inParams.getMomentType();
-        String text = inParams.getText();
+        String text = null;
+        List<String> pictures = null;
+        String video = null;
+        switch (momentType){
+            case TEXT:
+                text = inParams.getText();
+                break;
+            case PICTURE:
+                pictures = inParams.getPictures();
+                break;
+            case PICTURE_TEXT:
+                text = inParams.getText();
+                pictures = inParams.getPictures();
+                break;
+            case VIDEO:
+                video = inParams.getVideo();
+                break;
+        }
         User user = userProcessor.getUserByUsername(username);
 
         /** 发布动态 */
-        if (momentProcessor.addMoment(user.getId(), momentType, text) == null)
+        if (momentProcessor.addMoment(user.getId(), momentType, text, pictures, video) == null)
         /** 写入数据库失败 */
             throw new CourseWarn(MomentWarnEnum.MOMENT_PUBLISH_FAILED);
 
@@ -54,7 +72,7 @@ public class MomentController {
     public MomentOutParams momentViewUser(CommonInParams inParams) throws Exception {
         String username = inParams.getUsername();
         User user = userProcessor.getUserByUsername(username);
-        List<String> contacts = user.getContacts();
+        List<String> contacts = new ArrayList<>();
         contacts.add(user.getId());
 
         /** 浏览动态 */

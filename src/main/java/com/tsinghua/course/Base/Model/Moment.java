@@ -19,6 +19,10 @@ public class Moment {
     MomentType momentType;
     // 动态文本
     String text;
+    // 动态图片名列表
+    List<String> pictures;
+    // 动态视频名
+    String video;
     // 点赞列表
     List<String> thumbs = new ArrayList<>();
     /** 单条回复类 */
@@ -86,6 +90,22 @@ public class Moment {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public List<String> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(List<String> pictures) {
+        this.pictures = pictures;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
     }
 
     public MomentType getMomentType() {
