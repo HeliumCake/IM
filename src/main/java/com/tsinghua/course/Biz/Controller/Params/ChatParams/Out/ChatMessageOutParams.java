@@ -8,6 +8,10 @@ public class ChatMessageOutParams extends CommonOutParams {
 	// 见 com.tsinghua.course.Base.Model.ChatGroup.ChatMessage
 
 	/**
+	 * 唯一标识符
+	 */
+	private long id;
+	/**
 	 * 创建时间
 	 */
 	private Date timeCreated;
@@ -29,6 +33,11 @@ public class ChatMessageOutParams extends CommonOutParams {
 	 * 附件文件内容
 	 */
 	private Byte[] attachmentContent;
+
+	public void setId(long id)
+	{
+		this.id = id;
+	}
 
 	public void setTimeCreated(Date timeCreated) {
 		this.timeCreated = timeCreated;

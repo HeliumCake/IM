@@ -5,6 +5,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Enum.ChatGroupType;
 import com.tsinghua.course.Base.Model.ChatGroup;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -88,9 +89,33 @@ public class ChatProcessor {
 	 * 为指定聊天添加一条聊天消息，返回是否成功
 	 */
 	public boolean addChatMessage(String groupId, ChatGroup.ChatMessage message) {
+		ChatGroup group = getChatGroupById(groupId);
+		if (group == null)
+		{
+			return false;
+		}
+		long id = 0;
+		if (!group.getChats().isEmpty())
+		{
+			id = group.getChats().get(group.getChats().size() - 1).getId() + 1;
+		}
+		message.setId(id);
 		Query query = new Query();
 		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		UpdateResult result = mongoTemplate.updateFirst(query, new Update().push(KeyConstant.CHATS, message), ChatGroup.class);
+		return result.getModifiedCount() > 0;
+	}
+
+	/**
+	 * 为指定聊天删除指定聊天信息id的一条聊天信息，返回是否成功
+	 */
+	public boolean deleteChatMessage(String groupId, int messageId)
+	{
+		Query query = new Query();
+		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		Document document = new Document();
+		document.put(KeyConstant.ID, messageId);
+		UpdateResult result = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.CHATS, document), ChatGroup.class);
 		return result.getModifiedCount() > 0;
 	}
 }

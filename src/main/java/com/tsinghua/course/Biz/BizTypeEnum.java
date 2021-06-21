@@ -31,7 +31,8 @@ public enum BizTypeEnum {
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),
     QUERY_CHAT_INFO(ChatController.class, "/chat/info", "获得指定聊天的信息"),
     ADD_CHAT_MESSAGE(ChatController.class, "/chat/addMessage", "添加指定聊天的聊天消息"),
-    GET_CHAT_MESSAGE(ChatController.class, "/chat/getMessage", "获得指定聊天的聊天消息"),
+    GET_CHAT_MESSAGE(ChatController.class, "/chat/getMessage", "获得指定聊天的范围内的聊天消息"),
+    DELETE_CHAT_MESSAGE(ChatController.class, "/chat/deleteMessage", "删除指定聊天的一个聊天消息"),
 
     /** 定时任务业务测试 */
     LOG_TEST(TimerController.class, null, "定时日志测试"),

@@ -7,10 +7,7 @@ import com.tsinghua.course.Base.Error.ChatWarnEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Model.ChatGroup;
 import com.tsinghua.course.Biz.BizTypeEnum;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.AddChatMessageInParams;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.CreateChatInParams;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.GetChatMessageInParams;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.QueryChatInfoInParams;
+import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatMessageOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.CreateChatOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.QueryChatInfoOutParams;
@@ -100,7 +97,7 @@ public class ChatController {
 	}
 
 	/**
-	 * 获得指定聊天的聊天消息
+	 * 获得指定聊天的范围内的聊天消息
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_CHAT_MESSAGE)
@@ -118,6 +115,7 @@ public class ChatController {
 		for (int i = l; i < r; i++) {
 			ChatGroup.ChatMessage message = group.getChats().get(i);
 			ChatMessageOutParams outParams = new ChatMessageOutParams();
+			outParams.setId(message.getId());
 			outParams.setSenderId(message.getSenderId());
 			outParams.setText(message.getText());
 			outParams.setTimeCreated(message.getTimeCreated());
@@ -125,6 +123,21 @@ public class ChatController {
 			outParams.setAttachmentContent(message.getAttachmentContent());
 			result.add(outParams);
 		}
+		return result;
+	}
+
+	/**
+	 * 删除指定聊天的一个聊天消息
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.DELETE_CHAT_MESSAGE)
+	public CommonOutParams deleteChatMessage(DeleteChatMessageInParams params) throws CourseWarn {
+		ChatGroup group = chatProcessor.getChatGroupById(params.getGroupId());
+		if (group == null) {
+			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_ID);
+		}
+		CommonOutParams result = new CommonOutParams();
+		result.setSuccess(chatProcessor.deleteChatMessage(params.getGroupId(), params.getMessageId()));
 		return result;
 	}
 }
