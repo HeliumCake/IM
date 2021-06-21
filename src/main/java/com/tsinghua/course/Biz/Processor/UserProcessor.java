@@ -151,15 +151,18 @@ public class UserProcessor {
         return contacts;
     }
 
-    /** 获得ID与昵称对应关系 */
-    public Map<String,String> getNicknameById(List<String> ids) {
+    /** 获得ID与昵称头像对应关系 */
+    public Map<String,List<String>> getNicknameAvatarById(List<String> ids) {
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.ID).in(ids));
         List<User> users = mongoTemplate.find(query,User.class);
 
-        Map<String,String> map = new HashMap<>();
+        Map<String,List<String>> map = new HashMap<>();
         for (User user:users){
-            map.put(user.getId(),user.getNickname());
+            List<String> tmp = new ArrayList<>();
+            tmp.add(user.getNickname());
+            tmp.add(user.getAvatar());
+            map.put(user.getId(),tmp);
         }
         return map;
     }

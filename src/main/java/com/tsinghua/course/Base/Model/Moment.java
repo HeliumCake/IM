@@ -15,6 +15,8 @@ public class Moment {
     String id;
     // 发布者id
     String publisher;
+    // 发布者头像图片名
+    String avatar;
     // 动态类型
     MomentType momentType;
     // 动态文本
@@ -74,6 +76,14 @@ public class Moment {
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getId() {

@@ -72,25 +72,27 @@ public class MomentController {
     public MomentOutParams momentViewUser(CommonInParams inParams) throws Exception {
         String username = inParams.getUsername();
         User user = userProcessor.getUserByUsername(username);
-        List<String> contacts = new ArrayList<>();
+        List<String> contacts = user.getContacts();
         contacts.add(user.getId());
 
         /** 浏览动态 */
         List<Moment> moments = momentProcessor.getMomentByPublisher(user.getId());
-        Map<String,String> map = userProcessor.getNicknameById(contacts);
+        Map<String,List<String>> map = userProcessor.getNicknameAvatarById(contacts);
         if (moments.isEmpty())
         /** 读取数据库失败 */
             throw new CourseWarn(MomentWarnEnum.MOMENT_VIEW_FAILED);
 
         for (Moment moment:moments){
-            moment.setPublisher(map.get(moment.getPublisher()));
+            List<String> tmp = map.get(moment.getPublisher());
+            moment.setPublisher(tmp.get(0));
+            moment.setAvatar(tmp.get(1));
             List<Moment.Reply> replies = moment.getReplies();
             List<String> thumbs = moment.getThumbs();
             for (Moment.Reply reply:replies){
-                reply.setSender(map.get(reply.getSender()));
+                reply.setSender(map.get(reply.getSender()).get(0));
             }
             for (int i=0;i<thumbs.size();++i){
-                thumbs.set(i, map.get(thumbs.get(i)));
+                thumbs.set(i, map.get(thumbs.get(i)).get(0));
             }
             moment.setReplies(replies);
             moment.setThumbs(thumbs);
@@ -110,20 +112,22 @@ public class MomentController {
 
         /** 浏览动态 */
         List<Moment> moments = momentProcessor.getMomentByContacts(contacts);
-        Map<String,String> map = userProcessor.getNicknameById(contacts);
+        Map<String,List<String>> map = userProcessor.getNicknameAvatarById(contacts);
         if (moments.isEmpty())
         /** 读取数据库失败 */
             throw new CourseWarn(MomentWarnEnum.MOMENT_VIEW_FAILED);
 
         for (Moment moment:moments){
-            moment.setPublisher(map.get(moment.getPublisher()));
+            List<String> tmp = map.get(moment.getPublisher());
+            moment.setPublisher(tmp.get(0));
+            moment.setAvatar(tmp.get(1));
             List<Moment.Reply> replies = moment.getReplies();
             List<String> thumbs = moment.getThumbs();
             for (Moment.Reply reply:replies){
-                reply.setSender(map.get(reply.getSender()));
+                reply.setSender(map.get(reply.getSender()).get(0));
             }
             for (int i=0;i<thumbs.size();++i){
-                thumbs.set(i, map.get(thumbs.get(i)));
+                thumbs.set(i, map.get(thumbs.get(i)).get(0));
             }
             moment.setReplies(replies);
             moment.setThumbs(thumbs);
