@@ -17,6 +17,11 @@ public class ChatGroup
 	String id;
 
 	/**
+	 * 群聊名
+	 */
+	String name;
+
+	/**
 	 * 是否为群聊。若否，则代表这是一个双人会话
 	 */
 	ChatGroupType groupType;
@@ -120,6 +125,14 @@ public class ChatGroup
 		this.memberList = new ArrayList<>();
 		this.adminList = new ArrayList<>();
 		this.chats = new ArrayList<>();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getId() {

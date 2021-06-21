@@ -33,6 +33,9 @@ public class ChatController {
 	@BizType(BizTypeEnum.CREATE_CHAT)
 	public CreateChatOutParams createChat(CreateChatInParams params) throws CourseWarn
 	{
+		if (params.getMemberList().isEmpty()) {
+			throw new CourseWarn(ChatWarnEnum.ILLEGAL_PARAMETER);
+		}
 		if (params.getGroupType() == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_TYPE);
 		}
@@ -88,6 +91,7 @@ public class ChatController {
 		ChatGroup group = this.ensureUserInChatGroup(params);
 		QueryChatInfoOutParams result = new QueryChatInfoOutParams();
 		result.setGroupId(group.getId());
+		result.setName(group.getName());
 		result.setGroupType(group.getGroupType());
 		result.setMemberList(group.getMemberList());
 		result.setAdminList(group.getAdminList());

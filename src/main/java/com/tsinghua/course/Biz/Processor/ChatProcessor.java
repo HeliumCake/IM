@@ -38,7 +38,11 @@ public class ChatProcessor {
 	 * 创建一个聊天，返回创建的聊天对象
 	 */
 	public ChatGroup createChat(ChatGroupType groupType, List<String> memberList) {
+		if (memberList.isEmpty()) {
+			throw new RuntimeException("Creating chat group with empty member list");
+		}
 		ChatGroup chatGroup = new ChatGroup();
+		chatGroup.setName(memberList.get(0) + "的群聊");
 		chatGroup.setGroupType(groupType);
 		chatGroup.getMemberList().addAll(memberList);
 		ChatGroup insertedChatGroup = mongoTemplate.insert(chatGroup);
