@@ -19,7 +19,7 @@ public class ChatGroup
 	/**
 	 * 群聊名
 	 */
-	String name;
+	String groupName;
 
 	/**
 	 * 是否为群聊。若否，则代表这是一个双人会话
@@ -127,12 +127,12 @@ public class ChatGroup
 		this.chats = new ArrayList<>();
 	}
 
-	public String getName() {
-		return name;
+	public String getGroupName() {
+		return groupName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 	public String getId() {

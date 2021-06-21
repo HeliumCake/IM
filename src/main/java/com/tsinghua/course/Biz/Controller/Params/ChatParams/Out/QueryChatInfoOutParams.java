@@ -15,7 +15,7 @@ public class QueryChatInfoOutParams extends CommonOutParams
 	/**
 	 * 群聊名称
 	 */
-	String name;
+	String groupName;
 
 	/**
 	 * 是否为群聊。若否，则代表这是一个双人会话
@@ -40,8 +40,8 @@ public class QueryChatInfoOutParams extends CommonOutParams
 		this.groupId = groupId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 	public void setGroupType(ChatGroupType groupType) {

@@ -69,15 +69,40 @@ public class ChatController {
 	 * 若聊天id不存在，或者用户不处于此聊天中，则抛出相关异常
 	 * 返回对应的聊天对象
 	 */
-	private ChatGroup ensureUserInChatGroup(BasicChatOperationInParams params) throws CourseWarn
+	private ChatGroup ensureUserInChat(BasicChatOperationInParams params) throws CourseWarn
 	{
 		ChatGroup group = chatProcessor.getChatGroupById(params.getGroupId());
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_ID);
 		}
-		group = chatProcessor.getChatGroupIfUserInById(params.getGroupId(), params.getUsername());
+		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getUsername(), true, false);
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.NOT_IN_THE_GROUP);
+		}
+		return group;
+	}
+
+	/**
+	 * 类似ensureUserInChat，但额外检查保证这不是私聊
+	 */
+	private ChatGroup ensureUserInGroupChat(BasicChatOperationInParams params) throws CourseWarn
+	{
+		ChatGroup group = this.ensureUserInChat(params);
+		if (group.getGroupType() != ChatGroupType.GROUP_CHAT) {
+			throw new CourseWarn(ChatWarnEnum.PRIVATE_CHAT_OPERATION_NOT_SUPPORT);
+		}
+		return group;
+	}
+
+	/**
+	 * 类似ensureUserInGroupChat，但额外检查保证用户是管理员
+	 */
+	private ChatGroup ensureUserInGroupChatAndIsAdmin(BasicChatOperationInParams params) throws CourseWarn
+	{
+		this.ensureUserInGroupChat(params);
+		ChatGroup group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getUsername(), true, true);
+		if (group == null) {
+			throw new CourseWarn(ChatWarnEnum.NOT_ADMIN);
 		}
 		return group;
 	}
@@ -88,10 +113,10 @@ public class ChatController {
 	@NeedLogin
 	@BizType(BizTypeEnum.QUERY_CHAT_INFO)
 	public QueryChatInfoOutParams queryChatInfo(QueryChatInfoInParams params) throws CourseWarn {
-		ChatGroup group = this.ensureUserInChatGroup(params);
+		ChatGroup group = this.ensureUserInChat(params);
 		QueryChatInfoOutParams result = new QueryChatInfoOutParams();
 		result.setGroupId(group.getId());
-		result.setName(group.getName());
+		result.setGroupName(group.getGroupName());
 		result.setGroupType(group.getGroupType());
 		result.setMemberList(group.getMemberList());
 		result.setAdminList(group.getAdminList());
@@ -104,13 +129,34 @@ public class ChatController {
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.QUIT_CHAT)
-	public CommonOutParams quitChatInfo(QuitChatInfoInParams params) throws CourseWarn {
-		ChatGroup group = this.ensureUserInChatGroup(params);
-		if (group.getGroupType() == ChatGroupType.PRIVATE_CHAT) {
-			throw new CourseWarn(ChatWarnEnum.CANNOT_QUIT_PRIVATE_CHAT);
-		}
+	public CommonOutParams quitChatInfo(QuitChatInParams params) throws CourseWarn {
+		ChatGroup group = this.ensureUserInGroupChat(params);
 		CommonOutParams result = new CommonOutParams();
 		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), params.getUsername()));
+		return result;
+	}
+
+	/**
+	 * 删除指定聊天
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.DELETE_CHAT)
+	public CommonOutParams deleteChat(DeleteChatInParams params) throws CourseWarn {
+		this.ensureUserInGroupChatAndIsAdmin(params);
+		CommonOutParams result = new CommonOutParams();
+		result.setSuccess(chatProcessor.deleteChat(params.getGroupId()));
+		return result;
+	}
+
+	/**
+	 * 修改聊天名
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.MODIFY_CHAT_NAME)
+	public CommonOutParams modifyGroupName(ModifyGroupNameInParams params) throws CourseWarn {
+		this.ensureUserInGroupChatAndIsAdmin(params);
+		CommonOutParams result = new CommonOutParams();
+		result.setSuccess(chatProcessor.modifyGroupName(params.getGroupId(), params.getNewName()));
 		return result;
 	}
 
@@ -120,7 +166,7 @@ public class ChatController {
 	@NeedLogin
 	@BizType(BizTypeEnum.ADD_CHAT_MESSAGE)
 	public CommonOutParams addChatMessage(AddChatMessageInParams params) throws CourseWarn {
-		this.ensureUserInChatGroup(params);
+		this.ensureUserInChat(params);
 		CommonOutParams result = new CommonOutParams();
 		ChatGroup.ChatMessage message = new ChatGroup.ChatMessage();
 		message.setSenderId(ThreadUtil.getUsername());
@@ -137,7 +183,7 @@ public class ChatController {
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_CHAT_MESSAGE)
 	public List<ChatMessageOutParams> getChatMessage(GetChatMessageInParams params) throws CourseWarn {
-		ChatGroup group = this.ensureUserInChatGroup(params);
+		ChatGroup group = this.ensureUserInChat(params);
 		List<ChatMessageOutParams> result = new ArrayList<>();
 		int l = params.getLowerBound() != -1 ? params.getLowerBound() : 0;
 		int r = params.getUpperBound() != -1 ? params.getUpperBound() : group.getChats().size();
@@ -164,7 +210,7 @@ public class ChatController {
 	@NeedLogin
 	@BizType(BizTypeEnum.DELETE_CHAT_MESSAGE)
 	public CommonOutParams deleteChatMessage(DeleteChatMessageInParams params) throws CourseWarn {
-		this.ensureUserInChatGroup(params);
+		this.ensureUserInChat(params);
 		CommonOutParams result = new CommonOutParams();
 		result.setSuccess(chatProcessor.deleteChatMessage(params.getGroupId(), params.getMessageId()));
 		return result;

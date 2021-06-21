@@ -37,6 +37,8 @@ public class KeyConstant {
     public static final String REPLIES = "replies";
 
     /** 以下为ChatGroup关键key */
+    // 聊天名
+    public static final String GROUP_NAME = "groupName";
     // 用户名
     public static final String GROUP_TYPE = "groupType";
     // 聊天成员的id列表

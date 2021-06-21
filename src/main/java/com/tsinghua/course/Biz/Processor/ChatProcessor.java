@@ -42,7 +42,7 @@ public class ChatProcessor {
 			throw new RuntimeException("Creating chat group with empty member list");
 		}
 		ChatGroup chatGroup = new ChatGroup();
-		chatGroup.setName(memberList.get(0) + "的群聊");
+		chatGroup.setGroupName(memberList.get(0) + "的群聊");
 		chatGroup.setGroupType(groupType);
 		chatGroup.getMemberList().addAll(memberList);
 		ChatGroup insertedChatGroup = mongoTemplate.insert(chatGroup);
@@ -54,8 +54,7 @@ public class ChatProcessor {
 	 * 获得与另一用户的私聊聊天对象
 	 */
 	public ChatGroup getPrivateChatWith(String username, String other) {
-		Query query = new Query();
-		query.addCriteria(
+		Query query = new Query().addCriteria(
 				Criteria.where(KeyConstant.GROUP_TYPE).is(ChatGroupType.PRIVATE_CHAT).
 						and(KeyConstant.MEMBER_LIST).all(username, other)
 		);
@@ -66,8 +65,7 @@ public class ChatProcessor {
 	 * 获得某一用户加入的所有群聊与私聊
 	 */
 	public List<ChatGroup> getChats(String username, ChatGroupType groupType) {
-		Query query = new Query();
-		query.addCriteria(
+		Query query = new Query().addCriteria(
 				Criteria.where(KeyConstant.GROUP_TYPE).is(groupType).
 						and(KeyConstant.MEMBER_LIST).all(username)
 		);
@@ -89,22 +87,25 @@ public class ChatProcessor {
 	}
 
 	/**
-	 * 通过聊天id返回聊天对象，若不存在则返回null
+	 * 通过聊天id返回聊天对象，且保证用户在成员列表中，若不存在则返回null
 	 */
-	public ChatGroup getChatGroupById(String groupId) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+	public ChatGroup getChatGroupIfUserIsInById(String groupId, String username, boolean checkMember, boolean checkAdmin) {
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		if (checkMember) {
+			query.addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
+		}
+		if (checkAdmin) {
+			query.addCriteria(Criteria.where(KeyConstant.ADMIN_LIST).all(username));
+		}
 		return mongoTemplate.findOne(query, ChatGroup.class);
 	}
 
 	/**
 	 * 通过聊天id返回聊天对象，若不存在则返回null
 	 */
-	public ChatGroup getChatGroupIfUserInById(String groupId, String username) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
-		query.addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
-		return mongoTemplate.findOne(query, ChatGroup.class);
+	public ChatGroup getChatGroupById(String groupId) {
+		// username为null是安全的，因为当后两个参数为false时username不会被使用
+		return getChatGroupIfUserIsInById(groupId, null, false, false);
 	}
 
 	/**
@@ -133,8 +134,7 @@ public class ChatProcessor {
 	 */
 	public boolean deleteChatMessage(String groupId, int messageId)
 	{
-		Query query = new Query();
-		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		Document document = new Document();
 		document.put(KeyConstant.ID, messageId);
 		UpdateResult result = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.CHATS, document), ChatGroup.class);
@@ -145,8 +145,7 @@ public class ChatProcessor {
 	 * 用户退出聊天
 	 */
 	public boolean quitChat(String groupId, String username) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		UpdateResult result1 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.MEMBER_LIST, username), ChatGroup.class);
 		UpdateResult result2 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.ADMIN_LIST, username), ChatGroup.class);
 
@@ -160,5 +159,23 @@ public class ChatProcessor {
 		}
 
 		return result1.getModifiedCount() > 0;
+	}
+
+	/**
+	 * 删除聊天
+	 */
+	public boolean deleteChat(String groupId)
+	{
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		return mongoTemplate.remove(query, ChatGroup.class).getDeletedCount() > 0;
+	}
+
+	/**
+	 * 修改聊天名
+	 */
+	public boolean modifyGroupName(String groupId, String newName)
+	{
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		return mongoTemplate.updateFirst(query, new Update().set(KeyConstant.GROUP_NAME, newName), ChatGroup.class).getModifiedCount() > 0;
 	}
 }
