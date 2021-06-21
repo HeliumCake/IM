@@ -1,6 +1,7 @@
 package com.tsinghua.course.Base.Model;
 
 import com.tsinghua.course.Base.Enum.ChatGroupType;
+import com.tsinghua.course.Base.Enum.FileType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -31,8 +32,7 @@ public class ChatGroup
 	/**
 	 * 单条聊天消息类
 	 */
-	public static class ChatMessage
-	{
+	public static class ChatMessage {
 		/**
 		 * 唯一标识符
 		 */
@@ -53,10 +53,11 @@ public class ChatGroup
 		 * 附件文件名称，为空表示无附件
 		 */
 		String attachmentName;
+
 		/**
-		 * 附件文件内容，长度限制 15MB
+		 * 附件文件类型
 		 */
-		Byte[] attachmentContent;
+		private FileType attachmentType;
 
 		public ChatMessage() {
 			this.timeCreated = new Date();
@@ -100,12 +101,12 @@ public class ChatGroup
 			return attachmentName;
 		}
 
-		public void setAttachmentContent(Byte[] attachmentContent) {
-			this.attachmentContent = attachmentContent;
+		public void setAttachmentType(FileType attachmentType) {
+			this.attachmentType = attachmentType;
 		}
 
-		public Byte[] getAttachmentContent() {
-			return attachmentContent;
+		public FileType getAttachmentType() {
+			return attachmentType;
 		}
 	}
 

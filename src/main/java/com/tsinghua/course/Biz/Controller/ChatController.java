@@ -91,7 +91,7 @@ public class ChatController {
 		message.setSenderId(ThreadUtil.getUsername());
 		message.setText(params.getText());
 		message.setAttachmentName(params.getAttachmentName());
-		message.setAttachmentContent(params.getAttachmentContent());
+		message.setAttachmentType(params.getAttachmentType());
 		result.setSuccess(chatProcessor.addChatMessage(params.getGroupId(), message));
 		return result;
 	}
@@ -120,7 +120,7 @@ public class ChatController {
 			outParams.setText(message.getText());
 			outParams.setTimeCreated(message.getTimeCreated());
 			outParams.setAttachmentName(message.getAttachmentName());
-			outParams.setAttachmentContent(message.getAttachmentContent());
+			outParams.setAttachmentType(message.getAttachmentType());
 			result.add(outParams);
 		}
 		return result;

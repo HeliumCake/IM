@@ -1,5 +1,6 @@
 package com.tsinghua.course.Biz.Controller.Params.ChatParams.Out;
 
+import com.tsinghua.course.Base.Enum.FileType;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 
 import java.util.Date;
@@ -30,9 +31,9 @@ public class ChatMessageOutParams extends CommonOutParams {
 	private String attachmentName;
 
 	/**
-	 * 附件文件内容
+	 * 附件文件类型
 	 */
-	private Byte[] attachmentContent;
+	private FileType attachmentType;
 
 	public void setId(long id)
 	{
@@ -55,7 +56,7 @@ public class ChatMessageOutParams extends CommonOutParams {
 		this.attachmentName = attachmentName;
 	}
 
-	public void setAttachmentContent(Byte[] attachmentContent) {
-		this.attachmentContent = attachmentContent;
+	public void setAttachmentType(FileType attachmentType) {
+		this.attachmentType = attachmentType;
 	}
 }

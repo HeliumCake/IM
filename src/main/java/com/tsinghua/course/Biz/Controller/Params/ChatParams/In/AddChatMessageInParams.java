@@ -2,6 +2,7 @@ package com.tsinghua.course.Biz.Controller.Params.ChatParams.In;
 
 import com.tsinghua.course.Base.Annotation.BizType;
 import com.tsinghua.course.Base.Annotation.Required;
+import com.tsinghua.course.Base.Enum.FileType;
 import com.tsinghua.course.Biz.BizTypeEnum;
 
 @BizType(BizTypeEnum.ADD_CHAT_MESSAGE)
@@ -20,9 +21,9 @@ public class AddChatMessageInParams extends BasicChatOperationInParams {
 	private String attachmentName;
 
 	/**
-	 * 附件文件内容
+	 * 附件文件类型
 	 */
-	private Byte[] attachmentContent;
+	private FileType attachmentType;
 
 	public String getText() {
 		return text;
@@ -32,7 +33,7 @@ public class AddChatMessageInParams extends BasicChatOperationInParams {
 		return attachmentName;
 	}
 
-	public Byte[] getAttachmentContent() {
-		return attachmentContent;
+	public FileType getAttachmentType() {
+		return attachmentType;
 	}
 }
