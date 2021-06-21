@@ -34,6 +34,10 @@ public class ChatGroup
 	public static class ChatMessage
 	{
 		/**
+		 * 唯一标识符
+		 */
+		long id;
+		/**
 		 * 创建时间
 		 */
 		Date timeCreated;
@@ -56,6 +60,16 @@ public class ChatGroup
 
 		public ChatMessage() {
 			this.timeCreated = new Date();
+		}
+
+		public long getId()
+		{
+			return id;
+		}
+
+		public void setId(long id)
+		{
+			this.id = id;
 		}
 
 		public Date getTimeCreated() {
