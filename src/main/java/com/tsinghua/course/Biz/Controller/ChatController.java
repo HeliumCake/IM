@@ -8,9 +8,9 @@ import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Model.ChatGroup;
 import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.*;
+import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatMessageOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.CreateChatOutParams;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.QueryChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Processor.ChatProcessor;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
@@ -108,20 +108,28 @@ public class ChatController {
 	}
 
 	/**
-	 * 获得指定聊天的信息
+	 * 由ChatGroup生成QueryChatInfoOutParams
 	 */
-	@NeedLogin
-	@BizType(BizTypeEnum.QUERY_CHAT_INFO)
-	public QueryChatInfoOutParams queryChatInfo(QueryChatInfoInParams params) throws CourseWarn {
-		ChatGroup group = this.ensureUserInChat(params);
-		QueryChatInfoOutParams result = new QueryChatInfoOutParams();
+	private ChatInfoOutParams generateChatInfoOutParams(ChatGroup group) {
+		ChatInfoOutParams result = new ChatInfoOutParams();
 		result.setGroupId(group.getId());
 		result.setGroupName(group.getGroupName());
 		result.setGroupType(group.getGroupType());
 		result.setMemberList(group.getMemberList());
 		result.setAdminList(group.getAdminList());
 		result.setChatSize(group.getChats().size());
+		result.setSuccess(true);
 		return result;
+	}
+
+	/**
+	 * 获得指定聊天的信息
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.QUERY_CHAT_INFO)
+	public ChatInfoOutParams queryChatInfo(QueryChatInfoInParams params) throws CourseWarn {
+		ChatGroup group = this.ensureUserInChat(params);
+		return this.generateChatInfoOutParams(group);
 	}
 
 	/**
@@ -231,6 +239,20 @@ public class ChatController {
 		}
 		CommonOutParams result = new CommonOutParams();
 		result.setSuccess(chatProcessor.addUserToChat(params.getGroupId(), params.getInvitedUser()));
+		return result;
+	}
+
+	/**
+	 * 邀请某人进入聊天
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.GET_ALL_CHAT_INFO)
+	public List<ChatInfoOutParams> getAllChatInfoOfUser(GetAllChatInfoInParams params) {
+		List<ChatInfoOutParams> result = new ArrayList<>();
+		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(params.getUsername());
+		for (ChatGroup group : groups) {
+			result.add(this.generateChatInfoOutParams(group));
+		}
 		return result;
 	}
 }

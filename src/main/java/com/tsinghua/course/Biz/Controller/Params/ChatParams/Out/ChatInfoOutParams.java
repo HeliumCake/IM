@@ -5,7 +5,7 @@ import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 
 import java.util.List;
 
-public class QueryChatInfoOutParams extends CommonOutParams
+public class ChatInfoOutParams extends CommonOutParams
 {
 	/**
 	 * 唯一标识符

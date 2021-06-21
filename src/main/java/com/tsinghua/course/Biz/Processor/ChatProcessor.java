@@ -187,4 +187,13 @@ public class ChatProcessor {
 		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		return mongoTemplate.updateFirst(query, new Update().push(KeyConstant.MEMBER_LIST, invitedUser), ChatGroup.class).getModifiedCount() > 0;
 	}
+
+	/**
+	 * 获得用户所在的所有聊天
+	 */
+	public List<ChatGroup> getAllChatInfoOfUser(String username)
+	{
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
+		return mongoTemplate.find(query, ChatGroup.class);
+	}
 }

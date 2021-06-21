@@ -33,7 +33,7 @@ public enum BizTypeEnum {
     INVITE_USER_TO_CHAT(ChatController.class, "/chat/inviteUser", "邀请某人进入聊天"),
     DELETE_CHAT(ChatController.class, "/chat/delete", "管理员删除聊天"),
     MODIFY_CHAT_NAME(ChatController.class, "/chat/modifyName", "管理员修改聊天名称"),
-    GET_ALL_CHAT_INFO(ChatController.class, "/chat/getAll", "获得某人属于的所有群聊"),  // TODO
+    GET_ALL_CHAT_INFO(ChatController.class, "/chat/getAll", "获得某人属于的所有群聊"),
     QUERY_CHAT_INFO(ChatController.class, "/chat/info", "获得指定聊天的信息"),
     ADD_CHAT_MESSAGE(ChatController.class, "/chat/addMessage", "添加指定聊天的聊天消息"),
     GET_CHAT_MESSAGE(ChatController.class, "/chat/getMessage", "获得指定聊天的范围内的聊天消息"),
