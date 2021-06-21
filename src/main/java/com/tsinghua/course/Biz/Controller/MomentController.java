@@ -55,6 +55,8 @@ public class MomentController {
             case VIDEO:
                 video = inParams.getVideo();
                 break;
+            default:
+                throw new CourseWarn(MomentWarnEnum.MOMENT_PUBLISH_FAILED);
         }
         User user = userProcessor.getUserByUsername(username);
 
