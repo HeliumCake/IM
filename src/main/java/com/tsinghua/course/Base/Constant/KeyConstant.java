@@ -27,8 +27,6 @@ public class KeyConstant {
     public static final String PASSWORD = "password";
     // 联系人
     public static final String CONTACTS = "contacts";
-    // 私聊聊天id映射
-    public static final String PRIVATE_CHAT_MAP = "privateChatMap";
 
     /** 以下为Moment关键key */
     // 发布者
@@ -43,6 +41,8 @@ public class KeyConstant {
     public static final String GROUP_TYPE = "groupType";
     // 聊天成员的id列表
     public static final String MEMBER_LIST = "memberList";
+    // 聊天成员的id列表
+    public static final String ADMIN_LIST = "adminList";
     // 聊天消息列表
     public static final String CHATS = "chats";
 }

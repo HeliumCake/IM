@@ -29,6 +29,9 @@ public enum BizTypeEnum {
 
     /** 聊天会话相关 */
     CREATE_CHAT(ChatController.class, "/chat/create", "创建聊天"),
+    QUIT_CHAT(ChatController.class, "/chat/quit", "退出聊天"),
+    INVITE_CHAT(ChatController.class, "/chat/invite", "邀请某人进入聊天"),
+    GET_ALL_CHAT_INFO(ChatController.class, "/chat/getAll", "获得某人属于的所有群聊"),
     QUERY_CHAT_INFO(ChatController.class, "/chat/info", "获得指定聊天的信息"),
     ADD_CHAT_MESSAGE(ChatController.class, "/chat/addMessage", "添加指定聊天的聊天消息"),
     GET_CHAT_MESSAGE(ChatController.class, "/chat/getMessage", "获得指定聊天的范围内的聊天消息"),

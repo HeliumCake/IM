@@ -9,6 +9,9 @@ public enum ChatWarnEnum implements ExceptionInterface {
     UNKNOWN_USERNAME("ChatWarn002", "未知用户名"),
     UNKNOWN_GROUP_ID("ChatWarn003", "未知聊天id"),
     OUT_OF_CHAT_INDEX_BOUND("ChatWarn004", "非法的聊天消息索引范围"),
+    NOT_IN_THE_GROUP("ChatWarn005", "你不在这个聊天里"),
+    CANNOT_QUIT_PRIVATE_CHAT("ChatWarn006", "无法退出私聊"),
+    UNKNOWN_GROUP_TYPE("ChatWarn007", "未知聊天类型"),
     ;
 
 	ChatWarnEnum(String code, String msg) {

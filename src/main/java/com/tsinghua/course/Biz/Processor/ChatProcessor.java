@@ -1,6 +1,5 @@
 package com.tsinghua.course.Biz.Processor;
 
-import com.google.common.collect.ImmutableList;
 import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Enum.ChatGroupType;
@@ -13,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,17 +23,27 @@ public class ChatProcessor {
 	MongoTemplate mongoTemplate;
 
 	/**
+	 * 确保一个聊天存在管理员
+	 */
+	private void ensureAdminExists(ChatGroup chatGroup) {
+		if (chatGroup.getAdminList().isEmpty() && !chatGroup.getMemberList().isEmpty()) {
+			chatGroup.getAdminList().add(chatGroup.getMemberList().get(0));
+			Query query = new Query();
+			query.addCriteria(Criteria.where(KeyConstant.ID).is(chatGroup.getId()));
+			mongoTemplate.updateFirst(query, new Update().set(KeyConstant.ADMIN_LIST, chatGroup.getAdminList()), ChatGroup.class);
+		}
+	}
+
+	/**
 	 * 创建一个聊天，返回创建的聊天对象
 	 */
 	public ChatGroup createChat(ChatGroupType groupType, List<String> memberList) {
 		ChatGroup chatGroup = new ChatGroup();
 		chatGroup.setGroupType(groupType);
-		chatGroup.setMemberList(ImmutableList.copyOf(memberList));
-		List<String> admins = new ArrayList<>();
-		admins.add(memberList.get(0));
-		chatGroup.setAdminList(admins);
-		chatGroup.setChats(new ArrayList<>());
-		return mongoTemplate.insert(chatGroup);
+		chatGroup.getMemberList().addAll(memberList);
+		ChatGroup insertedChatGroup = mongoTemplate.insert(chatGroup);
+		this.ensureAdminExists(insertedChatGroup);
+		return insertedChatGroup;
 	}
 
 	/**
@@ -86,6 +94,16 @@ public class ChatProcessor {
 	}
 
 	/**
+	 * 通过聊天id返回聊天对象，若不存在则返回null
+	 */
+	public ChatGroup getChatGroupIfUserInById(String groupId, String username) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		query.addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
+		return mongoTemplate.findOne(query, ChatGroup.class);
+	}
+
+	/**
 	 * 为指定聊天添加一条聊天消息，返回是否成功
 	 */
 	public boolean addChatMessage(String groupId, ChatGroup.ChatMessage message) {
@@ -117,5 +135,26 @@ public class ChatProcessor {
 		document.put(KeyConstant.ID, messageId);
 		UpdateResult result = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.CHATS, document), ChatGroup.class);
 		return result.getModifiedCount() > 0;
+	}
+
+	/**
+	 * 用户退出聊天
+	 */
+	public boolean quitChat(String groupId, String username) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		UpdateResult result1 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.MEMBER_LIST, username), ChatGroup.class);
+		UpdateResult result2 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.ADMIN_LIST, username), ChatGroup.class);
+
+		// 检查该群聊是否还有人
+		ChatGroup group = this.getChatGroupById(groupId);
+		if (group.getMemberList().isEmpty()) {
+			mongoTemplate.remove(query, ChatGroup.class);
+		}
+		else {
+			this.ensureAdminExists(group);
+		}
+
+		return result1.getModifiedCount() > 0;
 	}
 }

@@ -4,6 +4,7 @@ import com.tsinghua.course.Base.Enum.ChatGroupType;
 import com.tsinghua.course.Base.Enum.FileType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -115,48 +116,33 @@ public class ChatGroup
 	 */
 	List<ChatMessage> chats;
 
-	public String getId()
-	{
+	public ChatGroup() {
+		this.memberList = new ArrayList<>();
+		this.adminList = new ArrayList<>();
+		this.chats = new ArrayList<>();
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public ChatGroupType getGroupType()
-	{
+	public ChatGroupType getGroupType() {
 		return groupType;
 	}
 
-	public List<String> getMemberList()
-	{
+	public List<String> getMemberList() {
 		return memberList;
 	}
 
-	public List<String> getAdminList()
-	{
+	public List<String> getAdminList() {
 		return adminList;
 	}
 
-	public List<ChatMessage> getChats()
-	{
+	public List<ChatMessage> getChats() {
 		return chats;
 	}
 
-	public void setGroupType(ChatGroupType groupType)
-	{
+	public void setGroupType(ChatGroupType groupType) {
 		this.groupType = groupType;
-	}
-
-	public void setMemberList(List<String> memberList)
-	{
-		this.memberList = memberList;
-	}
-
-	public void setAdminList(List<String> adminList)
-	{
-		this.adminList = adminList;
-	}
-
-	public void setChats(List<ChatMessage> chats)
-	{
-		this.chats = chats;
 	}
 }
