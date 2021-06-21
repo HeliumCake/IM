@@ -4,6 +4,5 @@ import com.tsinghua.course.Base.Annotation.BizType;
 import com.tsinghua.course.Biz.BizTypeEnum;
 
 @BizType(BizTypeEnum.QUERY_CHAT_INFO)
-public class QueryChatInfoInParams extends BasicChatOperationInParams
-{
+public class QueryChatInfoInParams extends BasicChatOperationInParams {
 }

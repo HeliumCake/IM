@@ -9,10 +9,11 @@ public enum ChatWarnEnum implements ExceptionInterface {
     UNKNOWN_USERNAME("ChatWarn002", "未知用户名"),
     UNKNOWN_GROUP_ID("ChatWarn003", "未知聊天id"),
     OUT_OF_CHAT_INDEX_BOUND("ChatWarn004", "非法的聊天消息索引范围"),
-    NOT_IN_THE_GROUP("ChatWarn005", "你不在这个聊天里"),
-    PRIVATE_CHAT_OPERATION_NOT_SUPPORT("ChatWarn006", "私聊不正常的操作"),
-    UNKNOWN_GROUP_TYPE("ChatWarn007", "未知聊天类型"),
-    NOT_ADMIN("ChatWarn008", "你不是管理员"),
+    NOT_IN_THE_CHAT("ChatWarn005", "你不在这个聊天里"),
+    USER_ALREADY_IN_THE_CHAT("ChatWarn006", "用户已在这个聊天里"),
+    PRIVATE_CHAT_OPERATION_NOT_SUPPORT("ChatWarn007", "私聊不正常的操作"),
+    UNKNOWN_GROUP_TYPE("ChatWarn008", "未知聊天类型"),
+    NOT_ADMIN("ChatWarn009", "你不是管理员"),
     ;
 
 	ChatWarnEnum(String code, String msg) {

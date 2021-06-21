@@ -178,4 +178,13 @@ public class ChatProcessor {
 		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		return mongoTemplate.updateFirst(query, new Update().set(KeyConstant.GROUP_NAME, newName), ChatGroup.class).getModifiedCount() > 0;
 	}
+
+	/**
+	 * 将用户添加至聊天的成员中
+	 */
+	public boolean addUserToChat(String groupId, String invitedUser)
+	{
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
+		return mongoTemplate.updateFirst(query, new Update().push(KeyConstant.MEMBER_LIST, invitedUser), ChatGroup.class).getModifiedCount() > 0;
+	}
 }

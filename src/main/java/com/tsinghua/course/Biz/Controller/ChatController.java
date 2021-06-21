@@ -77,7 +77,7 @@ public class ChatController {
 		}
 		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getUsername(), true, false);
 		if (group == null) {
-			throw new CourseWarn(ChatWarnEnum.NOT_IN_THE_GROUP);
+			throw new CourseWarn(ChatWarnEnum.NOT_IN_THE_CHAT);
 		}
 		return group;
 	}
@@ -129,7 +129,7 @@ public class ChatController {
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.QUIT_CHAT)
-	public CommonOutParams quitChatInfo(QuitChatInParams params) throws CourseWarn {
+	public CommonOutParams quitChat(QuitChatInParams params) throws CourseWarn {
 		ChatGroup group = this.ensureUserInGroupChat(params);
 		CommonOutParams result = new CommonOutParams();
 		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), params.getUsername()));
@@ -213,6 +213,24 @@ public class ChatController {
 		this.ensureUserInChat(params);
 		CommonOutParams result = new CommonOutParams();
 		result.setSuccess(chatProcessor.deleteChatMessage(params.getGroupId(), params.getMessageId()));
+		return result;
+	}
+
+	/**
+	 * 邀请某人进入聊天
+	 */
+	@NeedLogin
+	@BizType(BizTypeEnum.INVITE_USER_TO_CHAT)
+	public CommonOutParams inviteUserToChat(InviteUserToChatInParams params) throws CourseWarn {
+		this.ensureUserInChat(params);
+		if (userProcessor.getUserByUsername(params.getInvitedUser()) == null) {
+			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
+		}
+		if (chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getInvitedUser(), true, false) != null) {
+			throw new CourseWarn(ChatWarnEnum.USER_ALREADY_IN_THE_CHAT);
+		}
+		CommonOutParams result = new CommonOutParams();
+		result.setSuccess(chatProcessor.addUserToChat(params.getGroupId(), params.getInvitedUser()));
 		return result;
 	}
 }
