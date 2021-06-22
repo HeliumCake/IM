@@ -54,6 +54,15 @@ public class UserProcessor {
         user.setUsername(username);
         User insertedUser = mongoTemplate.insert(user);
         updatePassword(username, password);
+
+        Query query = new Query();
+        List<User> users = mongoTemplate.find(query, User.class);
+        for (User u : users){
+            Query query2 = new Query();
+            query2.addCriteria(Criteria.where(KeyConstant.USERNAME).is(u.getUsername()));
+            Update update2 = Update.update(KeyConstant.PASSWORD, SecureUtil.getHashedPassword(u.getId(), "password"));
+            UpdateResult result1 = mongoTemplate.updateFirst(query2,update2,User.class);
+        }
         return insertedUser;
     }
 
