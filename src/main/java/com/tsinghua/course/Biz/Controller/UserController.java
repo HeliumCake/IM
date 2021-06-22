@@ -99,6 +99,8 @@ public class UserController {
     public CommonOutParams userUsername(UsernameInParams inParams) throws Exception {
         String username = inParams.getUsername();
         String name = inParams.getName();
+        if (userProcessor.getUserByUsername(name) != null)
+            throw new CourseWarn(UserWarnEnum.REGISTER_DUPLICATION);
 
         /** 修改用户名 */
         if (userProcessor.updateUsername(username, name) == 0)
