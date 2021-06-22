@@ -90,11 +90,23 @@ public class MomentController {
             moment.setAvatar(tmp.get(1));
             List<Moment.Reply> replies = moment.getReplies();
             List<String> thumbs = moment.getThumbs();
-            for (Moment.Reply reply:replies){
-                reply.setSender(map.get(reply.getSender()).get(0));
+            for (int i=0;i<replies.size();){
+                if (map.containsKey(replies.get(i).getSender())){
+                    replies.get(i).setSender(map.get(replies.get(i).getSender()).get(0));
+                    ++i;
+                }
+                else {
+                    replies.remove(i);
+                }
             }
-            for (int i=0;i<thumbs.size();++i){
-                thumbs.set(i, map.get(thumbs.get(i)).get(0));
+            for (int i=0;i<thumbs.size();){
+                if (map.containsKey(thumbs.get(i))){
+                    thumbs.set(i, map.get(thumbs.get(i)).get(0));
+                    ++i;
+                }
+                else {
+                    thumbs.remove(i);
+                }
             }
             moment.setReplies(replies);
             moment.setThumbs(thumbs);
@@ -125,11 +137,23 @@ public class MomentController {
             moment.setAvatar(tmp.get(1));
             List<Moment.Reply> replies = moment.getReplies();
             List<String> thumbs = moment.getThumbs();
-            for (Moment.Reply reply:replies){
-                reply.setSender(map.get(reply.getSender()).get(0));
+            for (int i=0;i<replies.size();){
+                if (map.containsKey(replies.get(i).getSender())){
+                    replies.get(i).setSender(map.get(replies.get(i).getSender()).get(0));
+                    ++i;
+                }
+                else {
+                    replies.remove(i);
+                }
             }
-            for (int i=0;i<thumbs.size();++i){
-                thumbs.set(i, map.get(thumbs.get(i)).get(0));
+            for (int i=0;i<thumbs.size();){
+                if (map.containsKey(thumbs.get(i))){
+                    thumbs.set(i, map.get(thumbs.get(i)).get(0));
+                    ++i;
+                }
+                else {
+                    thumbs.remove(i);
+                }
             }
             moment.setReplies(replies);
             moment.setThumbs(thumbs);
