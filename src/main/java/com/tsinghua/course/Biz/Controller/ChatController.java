@@ -20,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ChatController {
@@ -247,11 +249,18 @@ public class ChatController {
 	@BizType(BizTypeEnum.GET_ALL_CHAT_INFO)
 	public MultiChatInfoOutParams getAllChatInfoOfUser(GetAllChatInfoInParams params) {
 		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(params.getUsername());
+		Map<String, ChatGroup.ChatMessage> lastMessage = new HashMap<>();
 		for (ChatGroup group : groups) {
-			group.setChats(null);  // 出参不需要聊天信息
+			// 储存最后一条消息
+			if (!group.getChats().isEmpty()) {
+				lastMessage.put(group.getId(), group.getChats().get(group.getChats().size() - 1));
+			}
+			// 出参不需要聊天信息
+			group.setChats(null);
 		}
 		MultiChatInfoOutParams result = new MultiChatInfoOutParams();
 		result.setChats(groups);
+		result.setLastMessage(lastMessage);
 		return result;
 	}
 }
