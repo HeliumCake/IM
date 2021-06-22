@@ -6,14 +6,12 @@ import com.tsinghua.course.Base.Enum.ChatGroupType;
 import com.tsinghua.course.Base.Error.ChatWarnEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Model.ChatGroup;
-import com.tsinghua.course.Base.Model.User;
 import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.CreateChatOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatMessageOutParams;
-import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Processor.ChatProcessor;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
@@ -72,17 +70,6 @@ public class ChatController {
 	}
 
 	/**
-	 * 从入参中获取用户id
-	 */
-	private String getUserId(CommonInParams params) throws CourseWarn {
-		User user = userProcessor.getUserByUsername(params.getUsername());
-		if (user == null) {
-			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
-		}
-		return user.getId();
-	}
-
-	/**
 	 * 通过给出参数的用户名与聊天id，尝试获得对应的聊天对象
 	 * 若聊天id不存在，或者用户不处于此聊天中，则抛出相关异常
 	 * 返回对应的聊天对象
@@ -93,7 +80,7 @@ public class ChatController {
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_ID);
 		}
-		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), this.getUserId(params), true, false);
+		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), ThreadUtil.getUserId(), true, false);
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.NOT_IN_THE_CHAT);
 		}
@@ -118,7 +105,7 @@ public class ChatController {
 	private ChatGroup ensureUserInGroupChatAndIsAdmin(BasicChatOperationInParams params) throws CourseWarn
 	{
 		this.ensureUserInGroupChat(params);
-		ChatGroup group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), this.getUserId(params), true, true);
+		ChatGroup group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), ThreadUtil.getUserId(), true, true);
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.NOT_ADMIN);
 		}
@@ -158,7 +145,7 @@ public class ChatController {
 	public CommonOutParams quitChat(QuitChatInParams params) throws CourseWarn {
 		ChatGroup group = this.ensureUserInGroupChat(params);
 		CommonOutParams result = new CommonOutParams();
-		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), this.getUserId(params)));
+		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), ThreadUtil.getUserId()));
 		return result;
 	}
 
@@ -195,7 +182,7 @@ public class ChatController {
 		this.ensureUserInChat(params);
 		CommonOutParams result = new CommonOutParams();
 		ChatGroup.ChatMessage message = new ChatGroup.ChatMessage();
-		message.setSenderId(ThreadUtil.getUsername());
+		message.setSenderId(ThreadUtil.getUserId());
 		message.setText(params.getText());
 		message.setAttachmentName(params.getAttachmentName());
 		message.setAttachmentType(params.getAttachmentType());
@@ -245,7 +232,7 @@ public class ChatController {
 	public CommonOutParams inviteUserToChat(InviteUserToChatInParams params) throws CourseWarn {
 		this.ensureUserInChat(params);
 		if (userProcessor.getUserById(params.getInvitedUserId()) == null) {
-			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
+			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USER_ID);
 		}
 		if (chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getInvitedUserId(), true, false) != null) {
 			throw new CourseWarn(ChatWarnEnum.USER_ALREADY_IN_THE_CHAT);
@@ -261,7 +248,7 @@ public class ChatController {
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_ALL_CHAT_INFO)
 	public MultiChatInfoOutParams getAllChatInfoOfUser(GetAllChatInfoInParams params) throws CourseWarn {
-		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(this.getUserId(params));
+		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(ThreadUtil.getUserId());
 		Map<String, ChatGroup.ChatMessage> lastMessage = new HashMap<>();
 		for (ChatGroup group : groups) {
 			// 储存最后一条消息
