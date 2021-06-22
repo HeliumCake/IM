@@ -9,8 +9,9 @@ import com.tsinghua.course.Base.Model.ChatGroup;
 import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatInfoOutParams;
-import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatMessageOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.CreateChatOutParams;
+import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatInfoOutParams;
+import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatMessageOutParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Processor.ChatProcessor;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
@@ -52,7 +53,9 @@ public class ChatController {
 			if (params.getMemberList().size() != 2) {
 				throw new CourseWarn(ChatWarnEnum.ILLEGAL_PARAMETER);
 			}
-			ChatGroup chatGroup = chatProcessor.getPrivateChatWith(params.getMemberList().get(0), params.getMemberList().get(1));
+			String user1 = params.getMemberList().get(0);
+			String user2 = params.getMemberList().get(1);
+			ChatGroup chatGroup = chatProcessor.getPrivateChatWith(user1, user2);
 			if (chatGroup != null) {
 				result.setChatGroupId(chatGroup.getId());
 				result.setSuccess(false);
@@ -190,25 +193,20 @@ public class ChatController {
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_CHAT_MESSAGE)
-	public List<ChatMessageOutParams> getChatMessage(GetChatMessageInParams params) throws CourseWarn {
+	public MultiChatMessageOutParams getChatMessage(GetChatMessageInParams params) throws CourseWarn {
 		ChatGroup group = this.ensureUserInChat(params);
-		List<ChatMessageOutParams> result = new ArrayList<>();
+		List<ChatGroup.ChatMessage> messages = new ArrayList<>();
 		int l = params.getLowerBound() != -1 ? params.getLowerBound() : 0;
 		int r = params.getUpperBound() != -1 ? params.getUpperBound() : group.getChats().size();
 		if (l < 0 || group.getChats().size() < r) {
 			throw new CourseWarn(ChatWarnEnum.OUT_OF_CHAT_INDEX_BOUND);
 		}
 		for (int i = l; i < r; i++) {
-			ChatGroup.ChatMessage message = group.getChats().get(i);
-			ChatMessageOutParams outParams = new ChatMessageOutParams();
-			outParams.setId(message.getId());
-			outParams.setSenderId(message.getSenderId());
-			outParams.setText(message.getText());
-			outParams.setTimeCreated(message.getTimeCreated());
-			outParams.setAttachmentName(message.getAttachmentName());
-			outParams.setAttachmentType(message.getAttachmentType());
-			result.add(outParams);
+			messages.add(group.getChats().get(i));
 		}
+		MultiChatMessageOutParams result = new MultiChatMessageOutParams();
+		result.setMessages(messages);
+		result.setSuccess(!messages.isEmpty());
 		return result;
 	}
 
@@ -243,16 +241,17 @@ public class ChatController {
 	}
 
 	/**
-	 * 邀请某人进入聊天
+	 * 获得所有聊天的基本信息
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_ALL_CHAT_INFO)
-	public List<ChatInfoOutParams> getAllChatInfoOfUser(GetAllChatInfoInParams params) {
-		List<ChatInfoOutParams> result = new ArrayList<>();
+	public MultiChatInfoOutParams getAllChatInfoOfUser(GetAllChatInfoInParams params) {
 		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(params.getUsername());
 		for (ChatGroup group : groups) {
-			result.add(this.generateChatInfoOutParams(group));
+			group.setChats(null);  // 出参不需要聊天信息
 		}
+		MultiChatInfoOutParams result = new MultiChatInfoOutParams();
+		result.setChats(groups);
 		return result;
 	}
 }

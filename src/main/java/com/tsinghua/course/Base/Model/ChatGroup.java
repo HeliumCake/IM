@@ -158,4 +158,8 @@ public class ChatGroup
 	public void setGroupType(ChatGroupType groupType) {
 		this.groupType = groupType;
 	}
+
+	public void setChats(List<ChatMessage> chats) {
+		this.chats = chats;
+	}
 }
