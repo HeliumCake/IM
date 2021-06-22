@@ -25,11 +25,11 @@ public class ChatInfoOutParams extends CommonOutParams
 	/**
 	 * 聊天成员的id列表
 	 */
-	List<String> memberList;
+	List<String> memberIdList;
 	/**
 	 * 聊天管理员的id列表
 	 */
-	List<String> adminList;
+	List<String> adminIdList;
 
 	/**
 	 * 聊天消息总长度
@@ -48,12 +48,12 @@ public class ChatInfoOutParams extends CommonOutParams
 		this.groupType = groupType;
 	}
 
-	public void setMemberList(List<String> memberList) {
-		this.memberList = memberList;
+	public void setMemberIdList(List<String> memberIdList) {
+		this.memberIdList = memberIdList;
 	}
 
-	public void setAdminList(List<String> adminList) {
-		this.adminList = adminList;
+	public void setAdminIdList(List<String> adminIdList) {
+		this.adminIdList = adminIdList;
 	}
 
 	public void setChatSize(int chatSize) {

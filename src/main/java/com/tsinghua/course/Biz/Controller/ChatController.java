@@ -6,12 +6,14 @@ import com.tsinghua.course.Base.Enum.ChatGroupType;
 import com.tsinghua.course.Base.Error.ChatWarnEnum;
 import com.tsinghua.course.Base.Error.CourseWarn;
 import com.tsinghua.course.Base.Model.ChatGroup;
+import com.tsinghua.course.Base.Model.User;
 import com.tsinghua.course.Biz.BizTypeEnum;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.ChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.CreateChatOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatInfoOutParams;
 import com.tsinghua.course.Biz.Controller.Params.ChatParams.Out.MultiChatMessageOutParams;
+import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
 import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Processor.ChatProcessor;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
@@ -36,37 +38,48 @@ public class ChatController {
 	@BizType(BizTypeEnum.CREATE_CHAT)
 	public CreateChatOutParams createChat(CreateChatInParams params) throws CourseWarn
 	{
-		if (params.getMemberList().isEmpty()) {
+		if (params.getMemberIdList().isEmpty()) {
 			throw new CourseWarn(ChatWarnEnum.ILLEGAL_PARAMETER);
 		}
 		if (params.getGroupType() == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_TYPE);
 		}
 
-		CreateChatOutParams result = new CreateChatOutParams();
-		for (String chatter: params.getMemberList()) {
-			if (userProcessor.getUserByUsername(chatter) == null) {
-				throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
+		for (String chatterId: params.getMemberIdList()) {
+			if (userProcessor.getUserById(chatterId) == null) {
+				throw new CourseWarn(ChatWarnEnum.UNKNOWN_USER_ID);
 			}
 		}
 
+		CreateChatOutParams result = new CreateChatOutParams();
 		// 若创建的是双人聊天，则需要判断是否已存在该聊天
 		if (params.getGroupType() == ChatGroupType.PRIVATE_CHAT) {
-			if (params.getMemberList().size() != 2) {
+			if (params.getMemberIdList().size() != 2) {
 				throw new CourseWarn(ChatWarnEnum.ILLEGAL_PARAMETER);
 			}
-			String user1 = params.getMemberList().get(0);
-			String user2 = params.getMemberList().get(1);
-			ChatGroup chatGroup = chatProcessor.getPrivateChatWith(user1, user2);
+			String user1Id = params.getMemberIdList().get(0);
+			String user2Id = params.getMemberIdList().get(1);
+			ChatGroup chatGroup = chatProcessor.getPrivateChatWith(user1Id, user2Id);
 			if (chatGroup != null) {
 				result.setChatGroupId(chatGroup.getId());
 				result.setSuccess(false);
 				return result;
 			}
 		}
-		ChatGroup chatGroup = chatProcessor.createChat(params.getGroupType(), params.getMemberList());
+		ChatGroup chatGroup = chatProcessor.createChat(params.getGroupType(), params.getMemberIdList());
 		result.setChatGroupId(chatGroup.getId());
 		return result;
+	}
+
+	/**
+	 * 从入参中获取用户id
+	 */
+	private String getUserId(CommonInParams params) throws CourseWarn {
+		User user = userProcessor.getUserByUsername(params.getUsername());
+		if (user == null) {
+			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
+		}
+		return user.getId();
 	}
 
 	/**
@@ -80,7 +93,7 @@ public class ChatController {
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_GROUP_ID);
 		}
-		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getUsername(), true, false);
+		group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), this.getUserId(params), true, false);
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.NOT_IN_THE_CHAT);
 		}
@@ -105,7 +118,7 @@ public class ChatController {
 	private ChatGroup ensureUserInGroupChatAndIsAdmin(BasicChatOperationInParams params) throws CourseWarn
 	{
 		this.ensureUserInGroupChat(params);
-		ChatGroup group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getUsername(), true, true);
+		ChatGroup group = chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), this.getUserId(params), true, true);
 		if (group == null) {
 			throw new CourseWarn(ChatWarnEnum.NOT_ADMIN);
 		}
@@ -120,8 +133,8 @@ public class ChatController {
 		result.setGroupId(group.getId());
 		result.setGroupName(group.getGroupName());
 		result.setGroupType(group.getGroupType());
-		result.setMemberList(group.getMemberList());
-		result.setAdminList(group.getAdminList());
+		result.setMemberIdList(group.getMemberIdList());
+		result.setAdminIdList(group.getAdminIdList());
 		result.setChatSize(group.getChats().size());
 		result.setSuccess(true);
 		return result;
@@ -145,7 +158,7 @@ public class ChatController {
 	public CommonOutParams quitChat(QuitChatInParams params) throws CourseWarn {
 		ChatGroup group = this.ensureUserInGroupChat(params);
 		CommonOutParams result = new CommonOutParams();
-		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), params.getUsername()));
+		result.setSuccess(chatProcessor.quitChat(params.getGroupId(), this.getUserId(params)));
 		return result;
 	}
 
@@ -231,14 +244,14 @@ public class ChatController {
 	@BizType(BizTypeEnum.INVITE_USER_TO_CHAT)
 	public CommonOutParams inviteUserToChat(InviteUserToChatInParams params) throws CourseWarn {
 		this.ensureUserInChat(params);
-		if (userProcessor.getUserByUsername(params.getInvitedUser()) == null) {
+		if (userProcessor.getUserById(params.getInvitedUserId()) == null) {
 			throw new CourseWarn(ChatWarnEnum.UNKNOWN_USERNAME);
 		}
-		if (chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getInvitedUser(), true, false) != null) {
+		if (chatProcessor.getChatGroupIfUserIsInById(params.getGroupId(), params.getInvitedUserId(), true, false) != null) {
 			throw new CourseWarn(ChatWarnEnum.USER_ALREADY_IN_THE_CHAT);
 		}
 		CommonOutParams result = new CommonOutParams();
-		result.setSuccess(chatProcessor.addUserToChat(params.getGroupId(), params.getInvitedUser()));
+		result.setSuccess(chatProcessor.addUserToChat(params.getGroupId(), params.getInvitedUserId()));
 		return result;
 	}
 
@@ -247,8 +260,8 @@ public class ChatController {
 	 */
 	@NeedLogin
 	@BizType(BizTypeEnum.GET_ALL_CHAT_INFO)
-	public MultiChatInfoOutParams getAllChatInfoOfUser(GetAllChatInfoInParams params) {
-		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(params.getUsername());
+	public MultiChatInfoOutParams getAllChatInfoOfUser(GetAllChatInfoInParams params) throws CourseWarn {
+		List<ChatGroup> groups = chatProcessor.getAllChatInfoOfUser(this.getUserId(params));
 		Map<String, ChatGroup.ChatMessage> lastMessage = new HashMap<>();
 		for (ChatGroup group : groups) {
 			// 储存最后一条消息

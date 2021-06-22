@@ -17,16 +17,16 @@ public class CreateChatInParams extends CommonInParams {
 	private ChatGroupType groupType;
 
 	/**
-	 * 聊天成员的id列表。username 应包含于其中
+	 * 聊天成员的id列表。username对应的用户的id应包含于其中
 	 */
 	@Required
-	private List<String> memberList;
+	private List<String> memberIdList;
 
 	public ChatGroupType getGroupType() {
 		return groupType;
 	}
 
-	public List<String> getMemberList() {
-		return memberList;
+	public List<String> getMemberIdList() {
+		return memberIdList;
 	}
 }

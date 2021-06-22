@@ -14,9 +14,4 @@ public abstract class BasicChatOperationInParams extends CommonInParams {
 	{
 		return groupId;
 	}
-
-	public void setGroupId(String groupId)
-	{
-		this.groupId = groupId;
-	}
 }

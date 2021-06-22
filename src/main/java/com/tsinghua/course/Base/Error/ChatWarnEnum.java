@@ -14,6 +14,7 @@ public enum ChatWarnEnum implements ExceptionInterface {
     PRIVATE_CHAT_OPERATION_NOT_SUPPORT("ChatWarn007", "私聊不正常的操作"),
     UNKNOWN_GROUP_TYPE("ChatWarn008", "未知聊天类型"),
     NOT_ADMIN("ChatWarn009", "你不是管理员"),
+    UNKNOWN_USER_ID("ChatWarn010", "未知用户名id"),
     ;
 
 	ChatWarnEnum(String code, String msg) {

@@ -29,11 +29,11 @@ public class ChatGroup
 	/**
 	 * 聊天成员的id列表
 	 */
-	List<String> memberList;
+	List<String> memberIdList;
 	/**
 	 * 聊天管理员的id列表
 	 */
-	List<String> adminList;
+	List<String> adminIdList;
 
 	/**
 	 * 单条聊天消息类
@@ -122,8 +122,8 @@ public class ChatGroup
 	List<ChatMessage> chats;
 
 	public ChatGroup() {
-		this.memberList = new ArrayList<>();
-		this.adminList = new ArrayList<>();
+		this.memberIdList = new ArrayList<>();
+		this.adminIdList = new ArrayList<>();
 		this.chats = new ArrayList<>();
 	}
 
@@ -143,12 +143,12 @@ public class ChatGroup
 		return groupType;
 	}
 
-	public List<String> getMemberList() {
-		return memberList;
+	public List<String> getMemberIdList() {
+		return memberIdList;
 	}
 
-	public List<String> getAdminList() {
-		return adminList;
+	public List<String> getAdminIdList() {
+		return adminIdList;
 	}
 
 	public List<ChatMessage> getChats() {

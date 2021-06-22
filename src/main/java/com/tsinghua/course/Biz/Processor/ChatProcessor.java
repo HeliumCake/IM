@@ -4,6 +4,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Enum.ChatGroupType;
 import com.tsinghua.course.Base.Model.ChatGroup;
+import com.tsinghua.course.Base.Model.User;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,29 +23,33 @@ public class ChatProcessor {
 	@Autowired
 	MongoTemplate mongoTemplate;
 
+	@Autowired
+	private UserProcessor userProcessor;
+
 	/**
 	 * 确保一个聊天存在管理员
 	 */
 	private void ensureAdminExists(ChatGroup chatGroup) {
-		if (chatGroup.getAdminList().isEmpty() && !chatGroup.getMemberList().isEmpty()) {
-			chatGroup.getAdminList().add(chatGroup.getMemberList().get(0));
+		if (chatGroup.getAdminIdList().isEmpty() && !chatGroup.getMemberIdList().isEmpty()) {
+			chatGroup.getAdminIdList().add(chatGroup.getMemberIdList().get(0));
 			Query query = new Query();
 			query.addCriteria(Criteria.where(KeyConstant.ID).is(chatGroup.getId()));
-			mongoTemplate.updateFirst(query, new Update().set(KeyConstant.ADMIN_LIST, chatGroup.getAdminList()), ChatGroup.class);
+			mongoTemplate.updateFirst(query, new Update().set(KeyConstant.ADMIN_ID_LIST, chatGroup.getAdminIdList()), ChatGroup.class);
 		}
 	}
 
 	/**
 	 * 创建一个聊天，返回创建的聊天对象
 	 */
-	public ChatGroup createChat(ChatGroupType groupType, List<String> memberList) {
-		if (memberList.isEmpty()) {
+	public ChatGroup createChat(ChatGroupType groupType, List<String> memberIdList) {
+		if (memberIdList.isEmpty()) {
 			throw new RuntimeException("Creating chat group with empty member list");
 		}
 		ChatGroup chatGroup = new ChatGroup();
-		chatGroup.setGroupName(memberList.get(0) + "的群聊");
+		User firstMember = userProcessor.getUserById(memberIdList.get(0));
+		chatGroup.setGroupName(firstMember.getNickname() + "的群聊");
 		chatGroup.setGroupType(groupType);
-		chatGroup.getMemberList().addAll(memberList);
+		chatGroup.getMemberIdList().addAll(memberIdList);
 		ChatGroup insertedChatGroup = mongoTemplate.insert(chatGroup);
 		this.ensureAdminExists(insertedChatGroup);
 		return insertedChatGroup;
@@ -53,49 +58,24 @@ public class ChatProcessor {
 	/**
 	 * 获得与另一用户的私聊聊天对象
 	 */
-	public ChatGroup getPrivateChatWith(String username, String other) {
+	public ChatGroup getPrivateChatWith(String userId, String otherId) {
 		Query query = new Query().addCriteria(
 				Criteria.where(KeyConstant.GROUP_TYPE).is(ChatGroupType.PRIVATE_CHAT).
-						and(KeyConstant.MEMBER_LIST).all(username, other)
+						and(KeyConstant.MEMBER_ID_LIST).all(userId, otherId)
 		);
 		return mongoTemplate.findOne(query, ChatGroup.class);
 	}
 
 	/**
-	 * 获得某一用户加入的所有群聊与私聊
-	 */
-	public List<ChatGroup> getChats(String username, ChatGroupType groupType) {
-		Query query = new Query().addCriteria(
-				Criteria.where(KeyConstant.GROUP_TYPE).is(groupType).
-						and(KeyConstant.MEMBER_LIST).all(username)
-		);
-		return mongoTemplate.find(query, ChatGroup.class);
-	}
-
-	/**
-	 * 获得某一用户加入的所有群聊
-	 */
-	public List<ChatGroup> getGroupChats(String username) {
-		return getChats(username, ChatGroupType.PRIVATE_CHAT);
-	}
-
-	/**
-	 * 获得某一用户加入的所有私聊
-	 */
-	public List<ChatGroup> getPrivateChats(String username) {
-		return getChats(username, ChatGroupType.GROUP_CHAT);
-	}
-
-	/**
 	 * 通过聊天id返回聊天对象，且保证用户在成员列表中，若不存在则返回null
 	 */
-	public ChatGroup getChatGroupIfUserIsInById(String groupId, String username, boolean checkMember, boolean checkAdmin) {
+	public ChatGroup getChatGroupIfUserIsInById(String groupId, String userId, boolean checkMember, boolean checkAdmin) {
 		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
 		if (checkMember) {
-			query.addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
+			query.addCriteria(Criteria.where(KeyConstant.MEMBER_ID_LIST).all(userId));
 		}
 		if (checkAdmin) {
-			query.addCriteria(Criteria.where(KeyConstant.ADMIN_LIST).all(username));
+			query.addCriteria(Criteria.where(KeyConstant.ADMIN_ID_LIST).all(userId));
 		}
 		return mongoTemplate.findOne(query, ChatGroup.class);
 	}
@@ -104,7 +84,7 @@ public class ChatProcessor {
 	 * 通过聊天id返回聊天对象，若不存在则返回null
 	 */
 	public ChatGroup getChatGroupById(String groupId) {
-		// username为null是安全的，因为当后两个参数为false时username不会被使用
+		// userId为null是安全的，因为当后两个参数为false时userId不会被使用
 		return getChatGroupIfUserIsInById(groupId, null, false, false);
 	}
 
@@ -144,15 +124,15 @@ public class ChatProcessor {
 	/**
 	 * 用户退出聊天
 	 */
-	public boolean quitChat(String groupId, String username) {
+	public boolean quitChat(String groupId, String userId) {
 		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
-		UpdateResult result1 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.MEMBER_LIST, username), ChatGroup.class);
-		UpdateResult result2 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.ADMIN_LIST, username), ChatGroup.class);
+		UpdateResult result1 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.MEMBER_ID_LIST, userId), ChatGroup.class);
+		UpdateResult result2 = mongoTemplate.updateFirst(query, new Update().pull(KeyConstant.ADMIN_ID_LIST, userId), ChatGroup.class);
 
 		// 检查该群聊是否还有人
 		ChatGroup group = this.getChatGroupById(groupId);
-		if (group.getMemberList().isEmpty()) {
-			mongoTemplate.remove(query, ChatGroup.class);
+		if (group.getMemberIdList().isEmpty()) {
+			deleteChat(groupId);
 		}
 		else {
 			this.ensureAdminExists(group);
@@ -182,18 +162,18 @@ public class ChatProcessor {
 	/**
 	 * 将用户添加至聊天的成员中
 	 */
-	public boolean addUserToChat(String groupId, String invitedUser)
+	public boolean addUserToChat(String groupId, String invitedUserId)
 	{
 		Query query = new Query().addCriteria(Criteria.where(KeyConstant.ID).is(groupId));
-		return mongoTemplate.updateFirst(query, new Update().push(KeyConstant.MEMBER_LIST, invitedUser), ChatGroup.class).getModifiedCount() > 0;
+		return mongoTemplate.updateFirst(query, new Update().push(KeyConstant.MEMBER_ID_LIST, invitedUserId), ChatGroup.class).getModifiedCount() > 0;
 	}
 
 	/**
 	 * 获得用户所在的所有聊天
 	 */
-	public List<ChatGroup> getAllChatInfoOfUser(String username)
+	public List<ChatGroup> getAllChatInfoOfUser(String userId)
 	{
-		Query query = new Query().addCriteria(Criteria.where(KeyConstant.MEMBER_LIST).all(username));
+		Query query = new Query().addCriteria(Criteria.where(KeyConstant.MEMBER_ID_LIST).all(userId));
 		return mongoTemplate.find(query, ChatGroup.class);
 	}
 }

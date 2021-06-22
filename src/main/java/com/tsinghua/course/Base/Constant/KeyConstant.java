@@ -42,9 +42,9 @@ public class KeyConstant {
     // 用户名
     public static final String GROUP_TYPE = "groupType";
     // 聊天成员的id列表
-    public static final String MEMBER_LIST = "memberList";
+    public static final String MEMBER_ID_LIST = "memberIdList";
     // 聊天成员的id列表
-    public static final String ADMIN_LIST = "adminList";
+    public static final String ADMIN_ID_LIST = "adminIdList";
     // 聊天消息列表
     public static final String CHATS = "chats";
 }
