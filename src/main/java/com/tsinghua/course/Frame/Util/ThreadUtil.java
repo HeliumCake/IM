@@ -1,5 +1,7 @@
 package com.tsinghua.course.Frame.Util;
 
+import com.tsinghua.course.Base.Error.CourseWarn;
+import com.tsinghua.course.Base.Error.UserWarnEnum;
 import com.tsinghua.course.Base.Model.User;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -55,6 +57,13 @@ public class ThreadUtil {
         if (user == null)
             return null;
         return user.getUsername();
+    }
+
+    public static String getUserId() throws CourseWarn {
+        User user = getUser();
+        if (user == null)
+            throw new CourseWarn(UserWarnEnum.USER_NOT_EXIST);
+        return user.getId();
     }
 
     public static User getUser() {
