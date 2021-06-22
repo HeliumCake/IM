@@ -91,7 +91,7 @@ public class UserProcessor {
         User user = mongoTemplate.findOne(query1,User.class);
 
         Query query2 = new Query();
-        query2.addCriteria(Criteria.where(KeyConstant.USERNAME).is(add));
+        query2.addCriteria(Criteria.where(KeyConstant.ID).is(add));
         User contact = mongoTemplate.findOne(query2, User.class);
         if (contact == null)
             return 0;
@@ -117,7 +117,7 @@ public class UserProcessor {
         User user = mongoTemplate.findOne(query1,User.class);
 
         Query query2 = new Query();
-        query2.addCriteria(Criteria.where(KeyConstant.USERNAME).is(delete));
+        query2.addCriteria(Criteria.where(KeyConstant.ID).is(delete));
         User contact = mongoTemplate.findOne(query2, User.class);
         if (contact == null)
             return 0;

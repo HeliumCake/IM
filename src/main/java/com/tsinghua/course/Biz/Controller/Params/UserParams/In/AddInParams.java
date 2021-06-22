@@ -10,7 +10,7 @@ import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
  **/
 @BizType(BizTypeEnum.USER_ADD)
 public class AddInParams extends CommonInParams {
-    // 要添加的用户名
+    // 要添加的用户ID
     @Required
     private String add;
 

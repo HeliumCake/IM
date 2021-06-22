@@ -10,7 +10,7 @@ import com.tsinghua.course.Biz.Controller.Params.CommonInParams;
  **/
 @BizType(BizTypeEnum.USER_DELETE)
 public class DeleteInParams extends CommonInParams {
-    // 要删除的用户名
+    // 要删除的用户ID
     @Required
     private String delete;
 
