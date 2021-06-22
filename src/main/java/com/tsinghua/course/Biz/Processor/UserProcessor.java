@@ -3,6 +3,7 @@ package com.tsinghua.course.Biz.Processor;
 import com.mongodb.client.result.UpdateResult;
 import com.tsinghua.course.Base.Constant.KeyConstant;
 import com.tsinghua.course.Base.Model.User;
+import com.tsinghua.course.Frame.Util.SecureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -51,15 +52,20 @@ public class UserProcessor {
     public User addUser(String username, String password) {
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password);
-        return mongoTemplate.insert(user);
+        User insertedUser = mongoTemplate.insert(user);
+        updatePassword(username, password);
+        return insertedUser;
     }
 
     /** 修改密码 */
     public long updatePassword(String username, String password) {
+        User user = getUserByUsername(username);
+        if (user == null) {
+            return 0;
+        }
         Query query = new Query();
         query.addCriteria(Criteria.where(KeyConstant.USERNAME).is(username));
-        Update update = Update.update(KeyConstant.PASSWORD,password);
+        Update update = Update.update(KeyConstant.PASSWORD, SecureUtil.getHashedPassword(user.getId(), password));
         UpdateResult result = mongoTemplate.updateFirst(query,update,User.class);
         return result.getModifiedCount();
     }

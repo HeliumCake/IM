@@ -14,15 +14,14 @@ import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.SearchOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.SearchUsersOutParams;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
 import com.tsinghua.course.Frame.Util.HttpSession;
+import com.tsinghua.course.Frame.Util.SecureUtil;
 import com.tsinghua.course.Frame.Util.SocketUtil;
 import com.tsinghua.course.Frame.Util.ThreadUtil;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @描述 用户控制器，用于执行用户相关的业务
@@ -40,7 +39,8 @@ public class UserController {
         if (username == null)
             throw new CourseWarn(UserWarnEnum.LOGIN_FAILED);
         User user = userProcessor.getUserByUsername(username);
-        if (user == null || !user.getPassword().equals(inParams.getPassword()))
+        String hashedInputPassword = SecureUtil.getHashedPassword(user.getId(), inParams.getPassword());
+        if (user == null || !user.getPassword().equals(hashedInputPassword))
             throw new CourseWarn(UserWarnEnum.LOGIN_FAILED);
 
         /** 登录成功，记录登录状态 */
