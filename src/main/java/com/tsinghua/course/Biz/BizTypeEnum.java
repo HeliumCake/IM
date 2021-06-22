@@ -14,6 +14,7 @@ public enum BizTypeEnum {
     USER_NICKNAME(UserController.class, "/user/nickname", "修改昵称"),
     USER_AVATAR(UserController.class, "/user/avatar", "修改头像"),
     USER_SEARCH(UserController.class, "/user/search", "查找用户"),
+    USER_SEARCH_USERS(UserController.class, "/user/searchUsers", "查找多个用户"),
     USER_ADD(UserController.class, "/user/add", "添加联系人"),
     USER_DELETE(UserController.class, "/user/delete", "删除联系人"),
     USER_VIEW(UserController.class, "/user/view", "浏览联系人列表"),

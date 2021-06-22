@@ -11,6 +11,7 @@ import com.tsinghua.course.Biz.Controller.Params.CommonOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.In.*;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.ContactsOutParams;
 import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.SearchOutParams;
+import com.tsinghua.course.Biz.Controller.Params.UserParams.Out.SearchUsersOutParams;
 import com.tsinghua.course.Biz.Processor.UserProcessor;
 import com.tsinghua.course.Frame.Util.HttpSession;
 import com.tsinghua.course.Frame.Util.SocketUtil;
@@ -162,6 +163,24 @@ public class UserController {
         boolean isContact = user.getContacts().contains(userSearch.getId());
 
         return new SearchOutParams(true,userSearch,isContact);
+    }
+
+    /** 查找多个用户业务 */
+    @NeedLogin
+    @BizType(BizTypeEnum.USER_SEARCH_USERS)
+    public SearchUsersOutParams usersSearch(SearchUsersInParams inParams) throws Exception {
+        List<String> users = inParams.getUsers();
+        String username = inParams.getUsername();
+        List<User> usersSearch = userProcessor.getUsersById(users);
+        User user = userProcessor.getUserByUsername(username);
+
+        /** 删除部分信息 */
+        for (User userSearch :usersSearch){
+            userSearch.setPassword(null);
+            userSearch.setContacts(null);
+        }
+
+        return new SearchUsersOutParams(true,usersSearch);
     }
 
     /** 添加联系人业务 */
